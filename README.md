@@ -6,8 +6,17 @@ Firecracker MicroVMs via the command line. This lets you run a fully
 functional Firecracker MicroVM, including console access, read/write
 access to filesystems, and network connectivity.
 
+Building
+---
+
+We use [go modules](https://github.com/golang/go/wiki/Modules), so you need to build with Go 1.11 or newer. `go build` or `make` should be sufficient to generate a working firectl binary.
+
 Usage
 ---
+
+You'll need to have a [firecracker](https://github.com/firecracker-microvm/firecracker) build, as well as an uncompressed Linux kernel image (`vmlinux`) and root filesystem image.
+
+By default, firectl searches `PATH` for the firecracker binary. The location of the kernel and filesystem image must be provided explicitly.
 
 ```
 Usage:
@@ -29,7 +38,7 @@ Application Options:
   -c, --ncpus=                  Number of CPUs (default: 1)
       --cpu-template=           Firecracker CPU Template (C3 or T2)
   -m, --memory=                 VM memory, in MiB (default: 512)
-      --metadata=               Firecracker Meatadata for MMDS (json)
+      --metadata=               Firecracker Metadata for MMDS (json)
   -l, --firecracker-log=        pipes the fifo contents to the specified file
   -d, --debug                   Enable debug output
   -h, --help                    Show usage
@@ -39,7 +48,7 @@ Example
 ---
 
 ```
-./cmd/firectl/firectl \
+firectl \
   --kernel=~/bin/vmlinux \
   --root-drive=/images/image-debootstrap.img -t \
   --cpu-template=T2 \

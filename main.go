@@ -205,7 +205,7 @@ type options struct {
 	FcCPUCount         int64    `long:"ncpus" short:"c" description:"Number of CPUs" default:"1"`
 	FcCPUTemplate      string   `long:"cpu-template" description:"Firecracker CPU Template (C3 or T2)"`
 	FcMemSz            int64    `long:"memory" short:"m" description:"VM memory, in MiB" default:"512"`
-	FcMetadata         string   `long:"metadata" description:"Firecracker Meatadata for MMDS (json)"`
+	FcMetadata         string   `long:"metadata" description:"Firecracker Metadata for MMDS (json)"`
 	FcFifoLogFile      string   `long:"firecracker-log" short:"l" description:"pipes the fifo contents to the specified file"`
 	Debug              bool     `long:"debug" short:"d" description:"Enable debug output"`
 	Help               bool     `long:"help" short:"h" description:"Show usage"`
@@ -249,7 +249,7 @@ func main() {
 		if err != nil {
 			log.Fatalf("Unable to parse NIC config: %s", err)
 		} else {
-			log.Error("Adding tap device %s", tapDev)
+			log.Errorf("Adding tap device %s", tapDev)
 			allowMDDS := metadata != nil
 			NICs = []firecracker.NetworkInterface{
 				firecracker.NetworkInterface{

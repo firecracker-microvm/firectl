@@ -38,7 +38,7 @@ Application Options:
   -c, --ncpus=                  Number of CPUs (default: 1)
       --cpu-template=           Firecracker CPU Template (C3 or T2)
   -m, --memory=                 VM memory, in MiB (default: 512)
-      --metadata=               Firecracker Meatadata for MMDS (json)
+      --metadata=               Firecracker Metadata for MMDS (json)
   -l, --firecracker-log=        pipes the fifo contents to the specified file
   -d, --debug                   Enable debug output
   -h, --help                    Show usage

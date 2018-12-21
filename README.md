@@ -57,3 +57,48 @@ firectl \
   --vsock-device=root:3 \
   --metadata='{"foo":"bar"}'
 ```
+
+Getting Started on AWS
+---
+
+- Create an `i3.metal` instance using Amazon Linux 2
+- Build latest version of firectl:
+
+  ```
+  sudo yum install -y git
+  git clone https://github.com/firecracker-microvm/firectl
+  sudo amazon-linux-extras install -y golang1.11
+  cd firectl
+  make
+  ```
+
+- Get Firecracker binary:
+
+  ```
+  curl -LOJ https://github.com/firecracker-microvm/firecracker/releases/download/v0.12.0/firecracker-v0.12.0
+  chmod +x firecracker-v0.12.0
+  sudo mv firecracker-v0.12.0 /usr/local/bin/firecracker
+  ```
+
+- Give read/write access to KVM:
+
+  ```
+  sudo setfacl -m u:${USER}:rw /dev/kvm
+  ```
+
+- Download kernel and root filesystem:
+
+  ```
+  curl -fsSL -o hello-vmlinux.bin https://s3.amazonaws.com/spec.ccfc.min/img/hello/kernel/hello-vmlinux.bin
+  curl -fsSL -o hello-rootfs.ext4 https://s3.amazonaws.com/spec.ccfc.min/img/hello/fsfiles/hello-rootfs.ext4
+  ```
+
+- Create microVM:
+
+  ```
+  firectl \
+    --kernel=hello-vmlinux.bin \
+    --root-drive=hello-rootfs.ext4 \
+    --firecracker-log=./firecracker-vmm.log \
+    --kernel-opts="console=ttyS0 noapic reboot=k panic=1 pci=off nomodules rw"
+  ```

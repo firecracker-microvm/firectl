@@ -96,9 +96,8 @@ Getting Started on AWS
 - Create microVM:
 
   ```
-  firectl \
+  ./firectl \
     --kernel=hello-vmlinux.bin \
     --root-drive=hello-rootfs.ext4 \
-    --firecracker-log=./firecracker-vmm.log \
     --kernel-opts="console=ttyS0 noapic reboot=k panic=1 pci=off nomodules rw"
   ```

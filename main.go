@@ -47,6 +47,19 @@ const (
 	executableMask = 0111
 )
 
+var (
+	// Error parsing nic config
+	parseNicConfigError = errors.New("NIC config wasn't of the form DEVICE/MACADDR")
+
+	// error parsing blockdevices
+	invalidDriveSpecificationNoSuffix = errors.New("invalid drive specification. Must have :rw or :ro suffix")
+	invalidDriveSpecificationNoPath   = errors.New("invalid drive specification. Must have path")
+
+	// error parsing vsock
+	unableToParseVsockDevices = errors.New("unable to parse vsock devices")
+	unableToParseVsockCID     = errors.New("unable to parse vsock CID as a number")
+)
+
 func parseBlockDevices(entries []string) ([]models.Drive, error) {
 	devices := []models.Drive{}
 
@@ -60,12 +73,11 @@ func parseBlockDevices(entries []string) ([]models.Drive, error) {
 		} else if strings.HasSuffix(entry, ":ro") {
 			path = strings.TrimSuffix(entry, ":ro")
 		} else {
-			msg := fmt.Sprintf("Invalid drive specification. Must have :rw or :ro suffix")
-			return nil, errors.New(msg)
+			return nil, invalidDriveSpecificationNoSuffix
 		}
 
 		if path == "" {
-			return nil, errors.New("Invalid drive specification")
+			return nil, invalidDriveSpecificationNoPath
 		}
 
 		if _, err := os.Stat(path); err != nil {
@@ -86,12 +98,9 @@ func parseBlockDevices(entries []string) ([]models.Drive, error) {
 
 // Given a string of the form DEVICE/MACADDR, return the device name and the mac address, or an error
 func parseNicConfig(cfg string) (string, string, error) {
-	// We've really only got one error:
-	err := errors.New("NIC config wasn't of the form DEVICE/MACADDR")
 	fields := strings.Split(cfg, "/")
-	// This isn't the most sophisticated input validation, but this program is just a demo...
-	if len(fields) != 2 {
-		return "", "", err
+	if len(fields) != 2 || len(fields[0]) == 0 || len(fields[1]) == 0 {
+		return "", "", parseNicConfigError
 	}
 	return fields[0], fields[1], nil
 }
@@ -102,12 +111,12 @@ func parseVsocks(devices []string) ([]firecracker.VsockDevice, error) {
 	var result []firecracker.VsockDevice
 	for _, entry := range devices {
 		fields := strings.Split(entry, ":")
-		if len(fields) != 2 {
-			return []firecracker.VsockDevice{}, errors.New("Could not parse")
+		if len(fields) != 2 || len(fields[0]) == 0 || len(fields[1]) == 0 {
+			return []firecracker.VsockDevice{}, unableToParseVsockDevices
 		}
 		CID, err := strconv.ParseUint(fields[1], 10, 32)
 		if err != nil {
-			return []firecracker.VsockDevice{}, errors.New("Vsock CID could not be parsed as a number")
+			return []firecracker.VsockDevice{}, unableToParseVsockCID
 		}
 		dev := firecracker.VsockDevice{
 			Path: fields[0],

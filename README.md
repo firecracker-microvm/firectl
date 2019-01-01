@@ -69,6 +69,7 @@ Getting Started on AWS
   git clone https://github.com/firecracker-microvm/firectl
   sudo amazon-linux-extras install -y golang1.11
   cd firectl
+  go get
   make
   ```
 

@@ -17,19 +17,19 @@ import "errors"
 
 var (
 	// Error parsing nic config
-	parseNicConfigError = errors.New("NIC config wasn't of the form DEVICE/MACADDR")
+	errInvalidNicConfig = errors.New("NIC config wasn't of the form DEVICE/MACADDR")
 
 	// error parsing blockdevices
-	invalidDriveSpecificationNoSuffix = errors.New("invalid drive specification. Must have :rw or :ro suffix")
-	invalidDriveSpecificationNoPath   = errors.New("invalid drive specification. Must have path")
+	errInvalidDriveSpecificationNoSuffix = errors.New("invalid drive specification. Must have :rw or :ro suffix")
+	errInvalidDriveSpecificationNoPath   = errors.New("invalid drive specification. Must have path")
 
 	// error parsing vsock
-	unableToParseVsockDevices = errors.New("unable to parse vsock devices")
-	unableToParseVsockCID     = errors.New("unable to parse vsock CID as a number")
+	errUnableToParseVsockDevices = errors.New("unable to parse vsock devices")
+	errUnableToParseVsockCID     = errors.New("unable to parse vsock CID as a number")
 
 	// error with handlefifos
-	conflictingLogOptsSet = errors.New("vmm-log-fifo and firecracker-log cannot be used together")
+	errConflictingLogOpts = errors.New("vmm-log-fifo and firecracker-log cannot be used together")
 
 	// error with firecracker config
-	invalidMetadata = errors.New("invalid metadata, unable to parse as json")
+	errInvalidMetadata = errors.New("invalid metadata, unable to parse as json")
 )

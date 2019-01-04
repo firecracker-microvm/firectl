@@ -49,7 +49,7 @@ func TestParseBlockDevices(t *testing.T) {
 			in:        []string{"/path"},
 			outDrives: nil,
 			expectedErr: func(a error) bool {
-				return a == invalidDriveSpecificationNoSuffix
+				return a == errInvalidDriveSpecificationNoSuffix
 			},
 		},
 		{
@@ -57,7 +57,7 @@ func TestParseBlockDevices(t *testing.T) {
 			in:        []string{":rw"},
 			outDrives: nil,
 			expectedErr: func(a error) bool {
-				return a == invalidDriveSpecificationNoPath
+				return a == errInvalidDriveSpecificationNoPath
 			},
 		},
 		{
@@ -113,21 +113,21 @@ func TestParseNicConfig(t *testing.T) {
 			in:        "a/",
 			outDevice: "",
 			outMac:    "",
-			outError:  parseNicConfigError,
+			outError:  errInvalidNicConfig,
 		},
 		{
 			name:      "no separater",
 			in:        "ab",
 			outDevice: "",
 			outMac:    "",
-			outError:  parseNicConfigError,
+			outError:  errInvalidNicConfig,
 		},
 		{
 			name:      "empty nic config",
 			in:        "",
 			outDevice: "",
 			outMac:    "",
-			outError:  parseNicConfigError,
+			outError:  errInvalidNicConfig,
 		},
 	}
 
@@ -181,7 +181,7 @@ func TestParseVsocks(t *testing.T) {
 			in:         []string{"a3:"},
 			outDevices: []firecracker.VsockDevice{},
 			expectedErr: func(a error) bool {
-				return a == unableToParseVsockDevices
+				return a == errUnableToParseVsockDevices
 			},
 		},
 		{
@@ -189,7 +189,7 @@ func TestParseVsocks(t *testing.T) {
 			in:         []string{""},
 			outDevices: []firecracker.VsockDevice{},
 			expectedErr: func(a error) bool {
-				return a == unableToParseVsockDevices
+				return a == errUnableToParseVsockDevices
 			},
 		},
 		{
@@ -197,7 +197,7 @@ func TestParseVsocks(t *testing.T) {
 			in:         []string{"a:b"},
 			outDevices: []firecracker.VsockDevice{},
 			expectedErr: func(a error) bool {
-				return a == unableToParseVsockCID
+				return a == errUnableToParseVsockCID
 			},
 		},
 		{
@@ -205,7 +205,7 @@ func TestParseVsocks(t *testing.T) {
 			in:         []string{"ae"},
 			outDevices: []firecracker.VsockDevice{},
 			expectedErr: func(a error) bool {
-				return a == unableToParseVsockDevices
+				return a == errUnableToParseVsockDevices
 			},
 		},
 	}
@@ -243,7 +243,7 @@ func TestHandleFifos(t *testing.T) {
 			},
 			outWriterNil: true,
 			expectedErr: func(e error) (bool, error) {
-				return e == conflictingLogOptsSet, conflictingLogOptsSet
+				return e == errConflictingLogOpts, errConflictingLogOpts
 			},
 			numClosers: 0,
 			validate:   validateTrue,
@@ -357,7 +357,7 @@ func TestGetFirecrackerNetworkingConfig(t *testing.T) {
 				FcNicConfig: "invalid",
 			},
 			expectedErr: func(e error) (bool, error) {
-				return e == parseNicConfigError, parseNicConfigError
+				return e == errInvalidNicConfig, errInvalidNicConfig
 			},
 			expectedNic: nil,
 		},
@@ -428,8 +428,8 @@ func TestGetBlockDevices(t *testing.T) {
 				FcAdditionalDrives: []string{"ab"},
 			},
 			expectedErr: func(e error) (bool, error) {
-				return e == invalidDriveSpecificationNoSuffix,
-					invalidDriveSpecificationNoSuffix
+				return e == errInvalidDriveSpecificationNoSuffix,
+					errInvalidDriveSpecificationNoSuffix
 			},
 			expectedDrives: nil,
 		},

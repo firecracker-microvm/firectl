@@ -14,7 +14,6 @@
 package main
 
 import (
-	"errors"
 	"io/ioutil"
 	"os"
 	"reflect"
@@ -25,13 +24,126 @@ import (
 	models "github.com/firecracker-microvm/firecracker-go-sdk/client/models"
 )
 
+func TestGetFirecrackerConfig(t *testing.T) {
+	tempFile, err := ioutil.TempFile("", "firectl-test-drive-path")
+	if err != nil {
+		t.Error(err)
+	}
+	defer func() {
+		tempFile.Close()
+		os.Remove(tempFile.Name())
+	}()
+	cases := []struct {
+		name        string
+		opts        *options
+		expectedErr func(error) (bool, error)
+		outConfig   firecracker.Config
+	}{
+		{
+			name: "Invalid metadata",
+			opts: &options{
+				FcMetadata: "{ invalid:json",
+			},
+			expectedErr: func(e error) (bool, error) {
+				return strings.HasPrefix(e.Error(), errInvalidMetadata.Error()), errInvalidMetadata
+			},
+			outConfig: firecracker.Config{},
+		},
+		{
+			name: "Invalid network config",
+			opts: &options{
+				FcNicConfig: "no-slash",
+			},
+			expectedErr: func(e error) (bool, error) {
+				return e == errInvalidNicConfig, errInvalidNicConfig
+			},
+			outConfig: firecracker.Config{},
+		},
+		{
+			name: "Invalid drives",
+			opts: &options{
+				FcNicConfig:        "a/b",
+				FcAdditionalDrives: []string{"/no-suffix"},
+			},
+			expectedErr: func(e error) (bool, error) {
+				return e == errInvalidDriveSpecificationNoSuffix, errInvalidDriveSpecificationNoSuffix
+			},
+			outConfig: firecracker.Config{},
+		},
+		{
+			name: "Invalid vsock addr",
+			opts: &options{
+				FcNicConfig:        "a/b",
+				FcAdditionalDrives: []string{tempFile.Name() + ":ro"},
+				FcVsockDevices:     []string{"noCID"},
+			},
+			expectedErr: func(e error) (bool, error) {
+				return e == errUnableToParseVsockDevices, errUnableToParseVsockDevices
+			},
+			outConfig: firecracker.Config{},
+		},
+		{
+			name: "Invalid fifo config",
+			opts: &options{
+				FcNicConfig:        "a/b",
+				FcAdditionalDrives: []string{tempFile.Name() + ":ro"},
+				FcVsockDevices:     []string{"a:3"},
+				FcFifoLogFile:      tempFile.Name(),
+				createFifoFileLogs: func(_ string) (*os.File, error) {
+					return nil, errUnableToCreateFifoLogFile
+				},
+			},
+			expectedErr: func(e error) (bool, error) {
+				return e != nil && strings.HasPrefix(e.Error(), errUnableToCreateFifoLogFile.Error()),
+					errUnableToCreateFifoLogFile
+			},
+			outConfig: firecracker.Config{},
+		},
+		{
+			name: "Valid config",
+			opts: &options{},
+			expectedErr: func(e error) (bool, error) {
+				return e == nil, nil
+			},
+			outConfig: firecracker.Config{
+				SocketPath: DefaultSocketPath,
+				Drives: []models.Drive{
+					models.Drive{
+						DriveID:      firecracker.String("1"),
+						PathOnHost:   firecracker.String(""),
+						IsRootDevice: firecracker.Bool(true),
+						IsReadOnly:   firecracker.Bool(false),
+					},
+				},
+				MachineCfg: models.MachineConfiguration{
+					HtEnabled: true,
+				},
+			},
+		},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			cfg, err := c.opts.getFirecrackerConfig()
+			if ok, expected := c.expectedErr(err); !ok {
+				t.Errorf("expected %s but got %s", expected, err)
+			}
+			if !reflect.DeepEqual(c.outConfig, cfg) {
+				t.Errorf("expected %+v but got %+v", c.outConfig, cfg)
+			}
+		})
+
+	}
+}
+
 func TestParseBlockDevices(t *testing.T) {
 	tempFile, err := ioutil.TempFile("", "firectl-test-drive-path")
 	if err != nil {
 		t.Error(err)
 	}
-	defer os.Remove(tempFile.Name())
-	defer tempFile.Close()
+	defer func() {
+		tempFile.Close()
+		os.Remove(tempFile.Name())
+	}()
 	validDrive := models.Drive{
 		DriveID:      firecracker.String("2"),
 		PathOnHost:   firecracker.String(tempFile.Name()),
@@ -251,17 +363,20 @@ func TestHandleFifos(t *testing.T) {
 		{
 			name: "set FcFifoLogFile causing createFifoFileLogs to fail",
 			opt: options{
-				FcFifoLogFile: "/noaccess",
+				FcFifoLogFile: "fail-here",
+				createFifoFileLogs: func(_ string) (*os.File, error) {
+					return nil, errUnableToCreateFifoLogFile
+				},
 			},
 			outWriterNil: true,
 			expectedErr: func(a error) (bool, error) {
 				if a == nil {
 					return false,
-						errors.New("failed to create fifo log file")
+						errUnableToCreateFifoLogFile
 				}
 				return strings.HasPrefix(a.Error(),
-						"failed to create fifo log file"),
-					errors.New("failed to create fifo log file")
+						errUnableToCreateFifoLogFile.Error()),
+					errUnableToCreateFifoLogFile
 			},
 			numClosers: 0,
 			validate:   validateTrue,
@@ -297,7 +412,8 @@ func TestHandleFifos(t *testing.T) {
 		{
 			name: "set FcFifoLogFile with valid value",
 			opt: options{
-				FcFifoLogFile: "value",
+				FcFifoLogFile:      "value",
+				createFifoFileLogs: createFifoFileLogs,
 			},
 			outWriterNil: false,
 			expectedErr: func(e error) (bool, error) {
@@ -414,8 +530,10 @@ func TestGetBlockDevices(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	defer os.Remove(tempFile.Name())
-	defer tempFile.Close()
+	defer func() {
+		tempFile.Close()
+		os.Remove(tempFile.Name())
+	}()
 	cases := []struct {
 		name           string
 		opt            options

@@ -17,6 +17,12 @@ all: firectl
 firectl: $(SRCFILES)
 	go build
 
+test:
+	go test -v ./...
+
+lint:
+	golint $(SRCFILES)
+
 clean:
 	go clean
 

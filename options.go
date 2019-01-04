@@ -25,8 +25,19 @@ import (
 
 	firecracker "github.com/firecracker-microvm/firecracker-go-sdk"
 	models "github.com/firecracker-microvm/firecracker-go-sdk/client/models"
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
+
+const (
+	DefaultSocketPath = "./firecracker.sock"
+)
+
+func newOptions() *options {
+	return &options{
+		createFifoFileLogs: createFifoFileLogs,
+	}
+}
 
 type options struct {
 	FcBinary           string   `long:"firecracker-binary" description:"Path to firecracker binary"`
@@ -50,6 +61,8 @@ type options struct {
 
 	closers       []func() error
 	validMetadata interface{}
+
+	createFifoFileLogs func(fifoPath string) (*os.File, error)
 }
 
 // Converts options to a usable firecracker config
@@ -57,7 +70,8 @@ func (opts *options) getFirecrackerConfig() (firecracker.Config, error) {
 	// validate metadata json
 	if opts.FcMetadata != "" {
 		if err := json.Unmarshal([]byte(opts.FcMetadata), &opts.validMetadata); err != nil {
-			return firecracker.Config{}, errInvalidMetadata
+			return firecracker.Config{},
+				errors.Wrap(err, errInvalidMetadata.Error())
 		}
 	}
 	//setup NICs
@@ -84,7 +98,8 @@ func (opts *options) getFirecrackerConfig() (firecracker.Config, error) {
 	}
 
 	return firecracker.Config{
-		SocketPath:        "./firecracker.sock",
+		// TODO make this configurable
+		SocketPath:        DefaultSocketPath,
 		LogFifo:           opts.FcLogFifo,
 		LogLevel:          opts.FcLogLevel,
 		MetricsFifo:       opts.FcMetricsFifo,
@@ -162,9 +177,8 @@ func (opts *options) handleFifos() (io.Writer, error) {
 		if len(opts.FcMetricsFifo) == 0 {
 			generateMetricFifoFilename = true
 		}
-
-		if fifo, err = createFifoFileLogs(opts.FcFifoLogFile); err != nil {
-			return nil, fmt.Errorf("failed to create fifo log file: %v", err)
+		if fifo, err = opts.createFifoFileLogs(opts.FcFifoLogFile); err != nil {
+			return nil, errors.Wrap(err, errUnableToCreateFifoLogFile.Error())
 		}
 		opts.addCloser(func() error {
 			return fifo.Close()

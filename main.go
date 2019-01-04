@@ -40,7 +40,7 @@ const (
 )
 
 func main() {
-	opts := options{}
+	opts := newOptions()
 	p := flags.NewParser(&opts, flags.Default)
 	// if no args just print help
 	if len(os.Args) == 1 {
@@ -66,7 +66,7 @@ func main() {
 }
 
 // Run a vmm with a given set of options
-func runVMM(ctx context.Context, opts options) error {
+func runVMM(ctx context.Context, opts *options) error {
 	// convert options to a firecracker config
 	fcCfg, err := opts.getFirecrackerConfig()
 	if err != nil {

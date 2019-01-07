@@ -61,13 +61,15 @@ firectl \
 Getting Started on AWS
 ---
 
-- Create an `i3.metal` instance using Amazon Linux 2
+- Create an `i3.metal` instance using Ubuntu 18.xx
 - Build latest version of firectl:
 
   ```
-  sudo yum install -y git
+  sudo apt-get -y update
+  sudo apt-get -y upgrade
+  sudo apt-get install -y git make build-essential
+  sudo snap install --classic go
   git clone https://github.com/firecracker-microvm/firectl
-  sudo amazon-linux-extras install -y golang1.11
   cd firectl
   make
   ```

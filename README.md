@@ -58,17 +58,22 @@ firectl \
   --metadata='{"foo":"bar"}'
 ```
 
-Getting Started on AWS
+Getting Started with Firectl
 ---
 
-- Create an `i3.metal` instance using Ubuntu 18.xx
+- Set up your machine as explained at https://github.com/firecracker-microvm/firecracker/blob/master/docs/dev-machine-setup.md
+- Install Go 1.11:
+
+  ```
+  sudo add-apt-repository ppa:longsleep/golang-backports
+  sudo apt-get -y update
+  sudo apt-get install -y golang-go
+  ```
+
 - Build latest version of firectl:
 
   ```
-  sudo apt-get -y update
-  sudo apt-get -y upgrade
   sudo apt-get install -y git make build-essential
-  sudo snap install --classic go
   git clone https://github.com/firecracker-microvm/firectl
   cd firectl
   make

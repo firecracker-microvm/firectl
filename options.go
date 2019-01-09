@@ -57,7 +57,7 @@ func (opts *options) getFirecrackerConfig() (firecracker.Config, error) {
 	// validate metadata json
 	if opts.FcMetadata != "" {
 		if err := json.Unmarshal([]byte(opts.FcMetadata), &opts.validMetadata); err != nil {
-			return firecracker.Config{}, fmt.Errorf("invalid metadata: %s", err)
+			return firecracker.Config{}, errInvalidMetadata
 		}
 	}
 	//setup NICs
@@ -110,15 +110,14 @@ func (opts *options) getNetwork() ([]firecracker.NetworkInterface, error) {
 		tapDev, tapMacAddr, err := parseNicConfig(opts.FcNicConfig)
 		if err != nil {
 			return nil, err
-		} else {
-			allowMDDS := opts.validMetadata != nil
-			NICs = []firecracker.NetworkInterface{
-				firecracker.NetworkInterface{
-					MacAddress:  tapMacAddr,
-					HostDevName: tapDev,
-					AllowMDDS:   allowMDDS,
-				},
-			}
+		}
+		allowMDDS := opts.validMetadata != nil
+		NICs = []firecracker.NetworkInterface{
+			firecracker.NetworkInterface{
+				MacAddress:  tapMacAddr,
+				HostDevName: tapDev,
+				AllowMDDS:   allowMDDS,
+			},
 		}
 	}
 	return NICs, nil
@@ -155,7 +154,7 @@ func (opts *options) handleFifos() (io.Writer, error) {
 
 	if len(opts.FcFifoLogFile) > 0 {
 		if len(opts.FcLogFifo) > 0 {
-			return nil, conflictingLogOptsSet
+			return nil, errConflictingLogOpts
 		}
 		generateFifoFilename = true
 		// if a fifo log file was specified via the CLI then we need to check if
@@ -231,11 +230,11 @@ func parseBlockDevices(entries []string) ([]models.Drive, error) {
 		} else if strings.HasSuffix(entry, ":ro") {
 			path = strings.TrimSuffix(entry, ":ro")
 		} else {
-			return nil, invalidDriveSpecificationNoSuffix
+			return nil, errInvalidDriveSpecificationNoSuffix
 		}
 
 		if path == "" {
-			return nil, invalidDriveSpecificationNoPath
+			return nil, errInvalidDriveSpecificationNoPath
 		}
 
 		if _, err := os.Stat(path); err != nil {
@@ -258,7 +257,7 @@ func parseBlockDevices(entries []string) ([]models.Drive, error) {
 func parseNicConfig(cfg string) (string, string, error) {
 	fields := strings.Split(cfg, "/")
 	if len(fields) != 2 || len(fields[0]) == 0 || len(fields[1]) == 0 {
-		return "", "", parseNicConfigError
+		return "", "", errInvalidNicConfig
 	}
 	return fields[0], fields[1], nil
 }
@@ -270,11 +269,11 @@ func parseVsocks(devices []string) ([]firecracker.VsockDevice, error) {
 	for _, entry := range devices {
 		fields := strings.Split(entry, ":")
 		if len(fields) != 2 || len(fields[0]) == 0 || len(fields[1]) == 0 {
-			return []firecracker.VsockDevice{}, unableToParseVsockDevices
+			return []firecracker.VsockDevice{}, errUnableToParseVsockDevices
 		}
 		CID, err := strconv.ParseUint(fields[1], 10, 32)
 		if err != nil {
-			return []firecracker.VsockDevice{}, unableToParseVsockCID
+			return []firecracker.VsockDevice{}, errUnableToParseVsockCID
 		}
 		dev := firecracker.VsockDevice{
 			Path: fields[0],

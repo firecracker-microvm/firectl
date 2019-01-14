@@ -26,6 +26,9 @@ firectl.sha256:
 firectl: $(SRCFILES)
 	go build
 
+docker:
+	docker run --rm -v ${PWD}:/firectl --workdir /firectl golang:1.11 make
+
 test:
 	go test -v ./...
 

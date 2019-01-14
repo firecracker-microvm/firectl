@@ -10,8 +10,17 @@ access to filesystems, and network connectivity.
 
 Building
 ---
+There are a few methods for building the binary.
+_We use [go modules](https://github.com/golang/go/wiki/Modules), so you need to build with Go 1.11 or newer._
 
-We use [go modules](https://github.com/golang/go/wiki/Modules), so you need to build with Go 1.11 or newer. `go build` or `make` should be sufficient to generate a working firectl binary.
+#### Make
+The default Makefile rule executes `go build` and relies on the Go toolchain installed on your computer.
+
+`make docker` creates a temporary Docker container which builds and copies the binary to your current directory.
+#### Docker
+`docker run --rm -v ${PWD}:/go/bin golang go get github.com/firecracker-microvm/firectl/...` creates a temporary Docker container which builds and copies the binary to your current directory.
+#### Go
+`go build`
 
 Usage
 ---

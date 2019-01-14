@@ -13,11 +13,12 @@ _We use [go modules](https://github.com/golang/go/wiki/Modules), so you need to 
 
 #### Make
 `make` is a Makefile rule which executes `go build`
+
 `make docker` creates a temporary Docker container which builds and copies the binary to your current directory.
 #### Docker
 `docker run --rm -v ${PWD}:/go/bin golang go get github.com/firecracker-microvm/firectl/...` creates a temporary Docker container which builds and copies the binary to your current directory.
 #### Go
-go build
+`go build`
 
 Usage
 ---

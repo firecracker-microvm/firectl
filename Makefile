@@ -17,6 +17,9 @@ all: firectl
 firectl: $(SRCFILES)
 	go build
 
+docker:
+        docker run --rm -v ${PWD}:/go/bin golang go get github.com/firecracker-microvm/firectl/...
+
 test:
 	go test -v ./...
 

@@ -20,7 +20,7 @@ By default, firectl searches `PATH` for the firecracker binary. The location of 
 
 ```
 Usage:
-  firectl
+  firectl [OPTIONS]
 
 Application Options:
       --firecracker-binary=     Path to firecracker binary
@@ -40,8 +40,11 @@ Application Options:
   -m, --memory=                 VM memory, in MiB (default: 512)
       --metadata=               Firecracker Metadata for MMDS (json)
   -l, --firecracker-log=        pipes the fifo contents to the specified file
+  -s, --socket-path=            path to use for firecracker socket, defaults to a unique file in in the first existing directory from {$HOME, $TMPDIR, or /tmp}
   -d, --debug                   Enable debug output
-  -h, --help                    Show usage
+
+Help Options:
+  -h, --help                    Show this help message
 ```
 
 Example

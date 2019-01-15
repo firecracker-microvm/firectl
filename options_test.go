@@ -100,13 +100,38 @@ func TestGetFirecrackerConfig(t *testing.T) {
 			outConfig: firecracker.Config{},
 		},
 		{
-			name: "Valid config",
-			opts: &options{},
+			name: "socket path provided",
+			opts: &options{
+				FcSocketPath: "/some/path/here",
+			},
 			expectedErr: func(e error) (bool, error) {
 				return e == nil, nil
 			},
 			outConfig: firecracker.Config{
-				SocketPath: DefaultSocketPath,
+				SocketPath: "/some/path/here",
+				Drives: []models.Drive{
+					models.Drive{
+						DriveID:      firecracker.String("1"),
+						PathOnHost:   firecracker.String(""),
+						IsRootDevice: firecracker.Bool(true),
+						IsReadOnly:   firecracker.Bool(false),
+					},
+				},
+				MachineCfg: models.MachineConfiguration{
+					HtEnabled: true,
+				},
+			},
+		},
+		{
+			name: "Valid config",
+			opts: &options{
+				FcSocketPath: "valid/path",
+			},
+			expectedErr: func(e error) (bool, error) {
+				return e == nil, nil
+			},
+			outConfig: firecracker.Config{
+				SocketPath: "valid/path",
 				Drives: []models.Drive{
 					models.Drive{
 						DriveID:      firecracker.String("1"),
@@ -586,6 +611,58 @@ func TestGetBlockDevices(t *testing.T) {
 			}
 			if !reflect.DeepEqual(drives, c.expectedDrives) {
 				t.Errorf("expected %v but got %v", c.expectedDrives, drives)
+			}
+		})
+	}
+}
+
+func TestGetSocketPath(t *testing.T) {
+	cases := []struct {
+		name        string
+		setup       func() func()
+		expectedOut func(string) bool
+	}{
+		{
+			name:  "verify sane path",
+			setup: func() func() { return func() {} },
+			expectedOut: func(o string) bool {
+				return strings.Contains(o, "firecracker.sock")
+			},
+		},
+		{
+			name: "no home dir",
+			setup: func() func() {
+				existing := os.Getenv("HOME")
+				os.Setenv("HOME", "")
+				return func() { os.Setenv("HOME", existing) }
+			},
+			expectedOut: func(o string) bool {
+				return strings.Contains(o, os.TempDir())
+			},
+		},
+		{
+			name: "no tempdir",
+			setup: func() func() {
+				existingHome := os.Getenv("HOME")
+				os.Setenv("HOME", "")
+				existingTmp := os.Getenv("TMPDIR")
+				os.Setenv("TMPDIR", "")
+				return func() {
+					os.Setenv("HOME", existingHome)
+					os.Setenv("TMPDIR", existingTmp)
+				}
+			},
+			expectedOut: func(o string) bool {
+				return strings.Contains(o, "/tmp")
+			},
+		},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			defer c.setup()()
+			out := getSocketPath()
+			if !c.expectedOut(out) {
+				t.Errorf("getSocketPath returned %v", out)
 			}
 		})
 	}

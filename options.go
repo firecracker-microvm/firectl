@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -27,10 +28,6 @@ import (
 	models "github.com/firecracker-microvm/firecracker-go-sdk/client/models"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
-)
-
-const (
-	DefaultSocketPath = "./firecracker.sock"
 )
 
 func newOptions() *options {
@@ -57,6 +54,7 @@ type options struct {
 	FcMemSz            int64    `long:"memory" short:"m" description:"VM memory, in MiB" default:"512"`
 	FcMetadata         string   `long:"metadata" description:"Firecracker Metadata for MMDS (json)"`
 	FcFifoLogFile      string   `long:"firecracker-log" short:"l" description:"pipes the fifo contents to the specified file"`
+	FcSocketPath       string   `long:"socket-path" short:"s" description:"path to use for firecracker socket, defaults to a unique file in in the first existing directory from {$HOME, $TMPDIR, or /tmp}"`
 	Debug              bool     `long:"debug" short:"d" description:"Enable debug output"`
 
 	closers       []func() error
@@ -97,9 +95,15 @@ func (opts *options) getFirecrackerConfig() (firecracker.Config, error) {
 		return firecracker.Config{}, err
 	}
 
+	var socketPath string
+	if opts.FcSocketPath != "" {
+		socketPath = opts.FcSocketPath
+	} else {
+		socketPath = getSocketPath()
+	}
+
 	return firecracker.Config{
-		// TODO make this configurable
-		SocketPath:        DefaultSocketPath,
+		SocketPath:        socketPath,
 		LogFifo:           opts.FcLogFifo,
 		LogLevel:          opts.FcLogLevel,
 		MetricsFifo:       opts.FcMetricsFifo,
@@ -300,4 +304,41 @@ func parseVsocks(devices []string) ([]firecracker.VsockDevice, error) {
 
 func createFifoFileLogs(fifoPath string) (*os.File, error) {
 	return os.OpenFile(fifoPath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+}
+
+// getSocketPath provides a randomized socket path by building a unique fielname
+// and searching for the existance of directories {$HOME, os.TempDir()} and returning
+// the path with the first directory joined with the unique filename. If we can't
+// find a good path panics.
+func getSocketPath() string {
+	filename := strings.Join([]string{
+		".firecracker.sock",
+		strconv.Itoa(os.Getpid()),
+		strconv.Itoa(rand.Intn(1000))},
+		"-",
+	)
+	var dir string
+	if d := os.Getenv("HOME"); checkExistsAndDir(d) {
+		dir = d
+	} else if checkExistsAndDir(os.TempDir()) {
+		dir = os.TempDir()
+	} else {
+		panic("Unable to find a location for firecracker socket. 'It's not going to do any good to land on mars if we're stupid.' --Ray Bradbury")
+	}
+
+	return filepath.Join(dir, filename)
+}
+
+// checkExistsAndDir returns true if path exists and is a Dir
+func checkExistsAndDir(path string) bool {
+	// empty
+	if path == "" {
+		return false
+	}
+	// does it exist?
+	if info, err := os.Stat(path); err == nil {
+		// is it a directory?
+		return info.IsDir()
+	}
+	return false
 }

@@ -41,7 +41,7 @@ const (
 
 func main() {
 	opts := newOptions()
-	p := flags.NewParser(&opts, flags.Default)
+	p := flags.NewParser(opts, flags.Default)
 	// if no args just print help
 	if len(os.Args) == 1 {
 		p.WriteHelp(os.Stderr)

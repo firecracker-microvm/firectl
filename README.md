@@ -12,7 +12,7 @@ There are a few methods for building the binary.
 _We use [go modules](https://github.com/golang/go/wiki/Modules), so you need to build with Go 1.11 or newer._
 
 #### Make
-`make` is a Makefile rule which executes `go build`
+The default Makefile rule executes `go build` and relies on the Go toolchain installed on your computer.
 
 `make docker` creates a temporary Docker container which builds and copies the binary to your current directory.
 #### Docker

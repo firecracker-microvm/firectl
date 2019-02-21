@@ -1,6 +1,8 @@
 firectl
 ===
 
+[![Build status](https://badge.buildkite.com/92fe02b4bd9564be0f7ea21d1ee782f6a6fe55cbd5465e3480.svg)](https://buildkite.com/firecracker-microvm/firectl)
+
 Firectl is a basic command-line tool that lets you run arbitrary
 Firecracker MicroVMs via the command line. This lets you run a fully
 functional Firecracker MicroVM, including console access, read/write

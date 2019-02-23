@@ -119,7 +119,8 @@ func (opts *options) getFirecrackerConfig() (firecracker.Config, error) {
 			HtEnabled:   !opts.FcDisableHt,
 			MemSizeMib:  opts.FcMemSz,
 		},
-		Debug: opts.Debug,
+		DisableJailer: true,
+		Debug:         opts.Debug,
 	}, nil
 }
 

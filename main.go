@@ -114,10 +114,7 @@ func runVMM(ctx context.Context, opts *options) error {
 		machineOpts = append(machineOpts, firecracker.WithProcessRunner(cmd))
 	}
 
-	m, err := firecracker.NewMachine(vmmCtx, fcCfg, machineOpts...)
-	if err != nil {
-		return fmt.Errorf("Failed creating machine: %s", err)
-	}
+	m := firecracker.NewMachine(vmmCtx, fcCfg, machineOpts...)
 
 	if opts.validMetadata != nil {
 		m.EnableMetadata(opts.validMetadata)

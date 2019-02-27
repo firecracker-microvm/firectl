@@ -503,7 +503,7 @@ func TestGetFirecrackerNetworkingConfig(t *testing.T) {
 			expectedNic: nil,
 		},
 		{
-			name: "valid FcNicConfig with mdds set to true",
+			name: "valid FcNicConfig with MMDS set to true",
 			opt: options{
 				FcNicConfig:   "valid/things",
 				validMetadata: 42,
@@ -515,12 +515,12 @@ func TestGetFirecrackerNetworkingConfig(t *testing.T) {
 				firecracker.NetworkInterface{
 					MacAddress:  "things",
 					HostDevName: "valid",
-					AllowMDDS:   true,
+					AllowMMDS:   true,
 				},
 			},
 		},
 		{
-			name: "valid FcNicConfig with mdds set to false",
+			name: "valid FcNicConfig with MMDS set to false",
 			opt: options{
 				FcNicConfig: "valid/things",
 			},
@@ -531,7 +531,7 @@ func TestGetFirecrackerNetworkingConfig(t *testing.T) {
 				firecracker.NetworkInterface{
 					MacAddress:  "things",
 					HostDevName: "valid",
-					AllowMDDS:   false,
+					AllowMMDS:   false,
 				},
 			},
 		},

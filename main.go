@@ -17,6 +17,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"os/exec"
 
 	firecracker "github.com/firecracker-microvm/firecracker-go-sdk"
 	flags "github.com/jessevdk/go-flags"
@@ -37,6 +38,8 @@ const (
 	// executableMask is the mask needed to check whether or not a file's
 	// permissions are executable.
 	executableMask = 0111
+
+	firecrackerDefaultPath = "firecracker"
 )
 
 func main() {
@@ -87,32 +90,40 @@ func runVMM(ctx context.Context, opts *options) error {
 		firecracker.WithLogger(log.NewEntry(logger)),
 	}
 
+	var firecrackerBinary string
 	if len(opts.FcBinary) != 0 {
-		finfo, err := os.Stat(opts.FcBinary)
-		if os.IsNotExist(err) {
-			return fmt.Errorf("Binary %q does not exist: %v", opts.FcBinary, err)
-		}
-
+		firecrackerBinary = opts.FcBinary
+	} else {
+		firecrackerBinary, err = exec.LookPath(firecrackerDefaultPath)
 		if err != nil {
-			return fmt.Errorf("Failed to stat binary, %q: %v", opts.FcBinary, err)
+			return err
 		}
-
-		if finfo.IsDir() {
-			return fmt.Errorf("Binary, %q, is a directory", opts.FcBinary)
-		} else if finfo.Mode()&executableMask == 0 {
-			return fmt.Errorf("Binary, %q, is not executable. Check permissions of binary", opts.FcBinary)
-		}
-
-		cmd := firecracker.VMCommandBuilder{}.
-			WithBin(opts.FcBinary).
-			WithSocketPath(fcCfg.SocketPath).
-			WithStdin(os.Stdin).
-			WithStdout(os.Stdout).
-			WithStderr(os.Stderr).
-			Build(ctx)
-
-		machineOpts = append(machineOpts, firecracker.WithProcessRunner(cmd))
 	}
+
+	finfo, err := os.Stat(firecrackerBinary)
+	if os.IsNotExist(err) {
+		return fmt.Errorf("Binary %q does not exist: %v", firecrackerBinary, err)
+	}
+
+	if err != nil {
+		return fmt.Errorf("Failed to stat binary, %q: %v", firecrackerBinary, err)
+	}
+
+	if finfo.IsDir() {
+		return fmt.Errorf("Binary, %q, is a directory", firecrackerBinary)
+	} else if finfo.Mode()&executableMask == 0 {
+		return fmt.Errorf("Binary, %q, is not executable. Check permissions of binary", firecrackerBinary)
+	}
+
+	cmd := firecracker.VMCommandBuilder{}.
+		WithBin(firecrackerBinary).
+		WithSocketPath(fcCfg.SocketPath).
+		WithStdin(os.Stdin).
+		WithStdout(os.Stdout).
+		WithStderr(os.Stderr).
+		Build(ctx)
+
+	machineOpts = append(machineOpts, firecracker.WithProcessRunner(cmd))
 
 	m, err := firecracker.NewMachine(vmmCtx, fcCfg, machineOpts...)
 	if err != nil {

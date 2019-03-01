@@ -25,16 +25,6 @@ import (
 )
 
 const (
-	terminalProgram = "xterm"
-	// consoleXterm indicates that the machine's console should be presented in an xterm
-	consoleXterm = "xterm"
-	// consoleStdio indicates that the machine's console should re-use the parent's stdio streams
-	consoleStdio = "stdio"
-	// consoleFile inddicates that the machine's console should be presented in files rather than stdout/stderr
-	consoleFile = "file"
-	// consoleNone indicates that the machine's console IO should be discarded
-	consoleNone = "none"
-
 	// executableMask is the mask needed to check whether or not a file's
 	// permissions are executable.
 	executableMask = 0111

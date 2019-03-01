@@ -11,6 +11,8 @@ github.com/firecracker-microvm/firecracker-go-sdk v0.0.0-20181220230332-433f262d
 github.com/firecracker-microvm/firecracker-go-sdk v0.0.0-20181220230332-433f262dc33b/go.mod h1:7ZuTUkeKoyUmdR6Tn4eepqjYeKMXcOg9gJytYVz8TuE=
 github.com/firecracker-microvm/firecracker-go-sdk v0.0.0-20190226020201-847e85db1412 h1:RwIr6dztoblljoWEcoQJ26LATycGTrgSZg+/NJYMzrM=
 github.com/firecracker-microvm/firecracker-go-sdk v0.0.0-20190226020201-847e85db1412/go.mod h1:UOsA6IaI52MQntB9PrarJFReY1nA9iZg2DI04kxPNMY=
+github.com/firecracker-microvm/firecracker-go-sdk v0.15.1-0.20190301211204-479ac1377a66 h1:VyaTvfeBlTquUvE8S4OlYydnjNeESYxHJFZs6LCDTSo=
+github.com/firecracker-microvm/firecracker-go-sdk v0.15.1-0.20190301211204-479ac1377a66/go.mod h1:UOsA6IaI52MQntB9PrarJFReY1nA9iZg2DI04kxPNMY=
 github.com/globalsign/mgo v0.0.0-20180905125535-1ca0a4f7cbcb h1:D4uzjWwKYQ5XnAvUbuvHW93esHg7F8N/OYeBBcJoTr0=
 github.com/globalsign/mgo v0.0.0-20180905125535-1ca0a4f7cbcb/go.mod h1:xkRDCp4j0OGD1HRkm4kmhM+pmpv3AKq5SU7GMg4oO/Q=
 github.com/go-openapi/analysis v0.0.0-20180825180245-b006789cd277/go.mod h1:k70tL6pCuVxPJOHXQ+wIac1FUrvNkHolPie/cLEU6hI=

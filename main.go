@@ -18,6 +18,8 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"os/signal"
+	"syscall"
 
 	firecracker "github.com/firecracker-microvm/firecracker-go-sdk"
 	flags "github.com/jessevdk/go-flags"
@@ -129,10 +131,33 @@ func runVMM(ctx context.Context, opts *options) error {
 	}
 	defer m.StopVMM()
 
+	installSignalHandlers(vmmCtx, m)
+
 	// wait for the VMM to exit
 	if err := m.Wait(vmmCtx); err != nil {
 		return fmt.Errorf("Wait returned an error %s", err)
 	}
 	log.Printf("Start machine was happy")
 	return nil
+}
+
+// Install custom signal handlers:
+func installSignalHandlers(ctx context.Context, m *firecracker.Machine) {
+	go func() {
+		// Clear some default handlers installed by the firecracker SDK:
+		signal.Reset(os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
+		c := make(chan os.Signal, 1)
+		signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
+
+		for {
+			switch s := <-c; {
+			case s == syscall.SIGTERM || s == os.Interrupt:
+				log.Printf("Caught SIGINT, requesting clean shutdown")
+				m.Shutdown(ctx)
+			case s == syscall.SIGQUIT:
+				log.Printf("Caught SIGTERM, forcing shutdown")
+				m.StopVMM()
+			}
+		}
+	}()
 }

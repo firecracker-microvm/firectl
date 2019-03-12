@@ -106,3 +106,12 @@ Getting Started on AWS
     --root-drive=hello-rootfs.ext4 \
     --kernel-opts="console=ttyS0 noapic reboot=k panic=1 pci=off nomodules rw"
   ```
+
+Testing
+---
+By default the tests require the firectl binary to be built and a kernel image
+to be present. The integration tests look for the binary and kernel image in
+the root directory. By default it will look for vmlinux kernel image. This can
+be overwritten by setting the environment variable `KERNELIMAGE` to the desired
+path. To disable these tests simply set the environment variable
+`SKIP_INTEG_TEST=1`.

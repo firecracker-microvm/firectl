@@ -19,6 +19,12 @@ steps:
   # multiple go builds are downloading to the same cache.
   - wait
 
+  # Git history validation happens after the 'wait' step so it happens
+  # in parallel with the subsequent tests and does not prevent them
+  # from running in the event of a validation failure.
+  - label: 'git log validation'
+    command: './.buildkite/logcheck.sh'
+
   - label: 'build'
     command: 'make'
 

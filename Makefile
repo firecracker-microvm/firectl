@@ -18,7 +18,7 @@ firectl: $(SRCFILES)
 	go build -o firectl
 
 release: $(SRCFILES)
-	CGO_ENABLED=0 go build \
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
 		    -a \
 		    -installsuffix cgo \
 		    -ldflags "-s" \

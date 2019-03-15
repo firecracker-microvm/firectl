@@ -30,4 +30,6 @@ steps:
 
   - label: ':hammer: tests'
     commands:
-      - "make test"
+      # make is run to build the firectl binary used for the integration tests
+      - "make"
+      - "KERNELIMAGE=/var/lib/fc-ci/vmlinux.bin make test"

@@ -26,17 +26,6 @@ release: $(SRCFILES)
 		    -asmflags=all=-trimpath=${TRIMPATH} \
 		    -o firectl
 
-sandbox-release-build:
-	docker build -f sandbox/Dockerfile -t "firectl" .
-
-sandbox-release-run:
-	docker run \
-		--init \
-		--rm \
-		-v ${MOUNTPATH}:/release \
-		-t firectl
-
-sandbox-release: sandbox-release-build sandbox-release-run
 test:
 	go test -v ./...
 
@@ -46,4 +35,4 @@ lint:
 clean:
 	go clean
 
-.PHONY: all clean sandbox-release sandbox-release-build sandbox-release-run
+.PHONY: all clean

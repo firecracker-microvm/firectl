@@ -14,6 +14,9 @@
 steps:
   - label: ':go: go mod download'
     command: 'go mod download'
+    agents:
+      queue: "${BUILDKITE_AGENT_META_DATA_QUEUE:-default}"
+
 
   # We use a "wait" step here, because Go's module logic freaks out when
   # multiple go builds are downloading to the same cache.
@@ -24,12 +27,18 @@ steps:
   # from running in the event of a validation failure.
   - label: 'git log validation'
     command: './.buildkite/logcheck.sh'
+    agents:
+      queue: "${BUILDKITE_AGENT_META_DATA_QUEUE:-default}"
 
   - label: 'build'
     command: 'make'
+    agents:
+      queue: "${BUILDKITE_AGENT_META_DATA_QUEUE:-default}"
 
   - label: ':hammer: tests'
     commands:
       # make is run to build the firectl binary used for the integration tests
       - "make"
       - "KERNELIMAGE=/var/lib/fc-ci/vmlinux.bin make test"
+    agents:
+      queue: "${BUILDKITE_AGENT_META_DATA_QUEUE:-default}"

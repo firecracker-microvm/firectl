@@ -53,6 +53,11 @@ func main() {
 		os.Exit(1)
 	}
 
+	if opts.Version {
+		fmt.Println(Version)
+		os.Exit(0)
+	}
+
 	defer opts.Close()
 
 	if err := runVMM(context.Background(), opts); err != nil {

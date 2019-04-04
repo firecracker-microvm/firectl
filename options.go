@@ -56,6 +56,7 @@ type options struct {
 	FcFifoLogFile      string   `long:"firecracker-log" short:"l" description:"pipes the fifo contents to the specified file"`
 	FcSocketPath       string   `long:"socket-path" short:"s" description:"path to use for firecracker socket, defaults to a unique file in in the first existing directory from {$HOME, $TMPDIR, or /tmp}"`
 	Debug              bool     `long:"debug" short:"d" description:"Enable debug output"`
+	Version            bool     `long:"version" description:"Outputs the version of the application"`
 
 	closers       []func() error
 	validMetadata interface{}

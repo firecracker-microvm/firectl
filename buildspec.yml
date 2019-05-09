@@ -12,9 +12,10 @@ phases:
   build:
     commands:
       - make test
-      - make
+      - make release
 artifacts:
   files:
     - firectl
+    - firectl.sha256
   name: firectl
   discard-paths: yes

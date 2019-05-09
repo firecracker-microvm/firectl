@@ -14,6 +14,12 @@ SRCFILES := *.go
 
 all: firectl
 
+release: firectl firectl.sha256
+	test $(shell git status --short | wc -l) -eq 0
+
+firectl.sha256:
+	sha256sum firectl > firectl.sha256
+
 firectl: $(SRCFILES)
 	go build
 

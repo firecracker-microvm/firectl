@@ -115,3 +115,18 @@ the root directory. By default it will look for vmlinux kernel image. This can
 be overwritten by setting the environment variable `KERNELIMAGE` to the desired
 path. To disable these tests simply set the environment variable
 `SKIP_INTEG_TEST=1`.
+
+Questions?
+---
+
+Please use
+[GitHub issues](https://github.com/firecracker-microvm/firectl/issues)
+to report problems, discuss roadmap items, or make feature requests.
+
+If you've discovered an issue that may have security implications to
+users or developers of this software, please do not report it using
+GitHub issues, but instead follow
+[Firecracker's security reporting guidelines](https://github.com/firecracker-microvm/firecracker/blob/master/SECURITY-POLICY.md).
+
+Other discussion: For general discussion, please join us in the
+`#general` channel on the [Firecracker Slack](https://tinyurl.com/firecracker-microvm).

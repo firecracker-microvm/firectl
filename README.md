@@ -77,7 +77,7 @@ Getting Started on AWS
 - Get Firecracker binary:
 
   ```
-  curl -Lo firecracker https://github.com/firecracker-microvm/firecracker/releases/download/v0.16.0/firecracker-v0.16.0
+  curl -oL firecracker https://github.com/firecracker-microvm/firecracker/releases/download/v0.16.0/firecracker-v0.16.0
   chmod +x firecracker
   sudo mv firecracker /usr/local/bin/firecracker
   ```

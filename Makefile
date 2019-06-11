@@ -12,6 +12,9 @@
 # permissions and limitations under the License.
 SRCFILES := *.go
 
+INSTALLROOT ?= /usr/local
+BINDIR ?= $(INSTALLROOT)/bin
+
 all: firectl
 
 release: firectl firectl.sha256
@@ -32,4 +35,7 @@ lint:
 clean:
 	go clean
 
-.PHONY: all clean
+install:
+	install -o root -g root -m755 firectl $(BINDIR)/
+
+.PHONY: all clean install

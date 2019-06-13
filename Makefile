@@ -24,7 +24,11 @@ firectl.sha256:
 	sha256sum firectl > firectl.sha256
 
 firectl: $(SRCFILES)
+ifneq ($(STATIC_BINARY),)
+	CGO_ENABLED=0 go build -installsuffix cgo -a
+else
 	go build
+endif
 
 test:
 	go test -v ./...

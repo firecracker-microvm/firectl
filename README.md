@@ -11,14 +11,24 @@ access to filesystems, and network connectivity.
 Building
 ---
 
-We use [go modules](https://github.com/golang/go/wiki/Modules), so you need to build with Go 1.11 or newer. `go build` or `make` should be sufficient to generate a working firectl binary.
+The default Makefile rule executes `go build` and relies on the Go toolchain
+installed on your computer.
+_We use [go modules](https://github.com/golang/go/wiki/Modules), so you need to
+build with Go 1.11 or newer._
+
+If you do not have a new-enough Go toolchain installed, you can use `make
+build-in-docker`.  This rule creates a temporary Docker container which builds
+and copies the binary to your current directory.
 
 Usage
 ---
 
-You'll need to have a [firecracker](https://github.com/firecracker-microvm/firecracker) build, as well as an uncompressed Linux kernel image (`vmlinux`) and root filesystem image.
+You'll need to have a
+[firecracker](https://github.com/firecracker-microvm/firecracker) build, as well
+as an uncompressed Linux kernel image (`vmlinux`) and root filesystem image.
 
-By default, firectl searches `PATH` for the firecracker binary. The location of the kernel and filesystem image must be provided explicitly.
+By default, firectl searches `PATH` for the firecracker binary. The location of
+the kernel and filesystem image must be provided explicitly.
 
 ```
 Usage:

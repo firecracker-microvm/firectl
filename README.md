@@ -23,9 +23,12 @@ the binary to your current directory.
 Usage
 ---
 
-You'll need to have a [firecracker](https://github.com/firecracker-microvm/firecracker) build, as well as an uncompressed Linux kernel image (`vmlinux`) and root filesystem image.
+You'll need to have a
+[firecracker](https://github.com/firecracker-microvm/firecracker) build, as well
+as an uncompressed Linux kernel image (`vmlinux`) and root filesystem image.
 
-By default, firectl searches `PATH` for the firecracker binary. The location of the kernel and filesystem image must be provided explicitly.
+By default, firectl searches `PATH` for the firecracker binary. The location of
+the kernel and filesystem image must be provided explicitly.
 
 ```
 Usage:

@@ -76,23 +76,22 @@ firectl \
 Getting Started on AWS
 ---
 
-- Create an `i3.metal` instance using Amazon Linux 2
-- Build latest version of firectl:
+- Create an `m5d.metal` instance using Amazon Linux 2
+- Get firectl binary:
 
   ```
-  sudo yum install -y git
-  git clone https://github.com/firecracker-microvm/firectl
-  sudo amazon-linux-extras install -y golang1.11
-  cd firectl
-  make
+  curl -Lo firectl https://firectl-release.s3.amazonaws.com/firectl-v0.1.0
+  curl -Lo firectl.sha256 https://firectl-release.s3.amazonaws.com/firectl-v0.1.0.sha256
+  sha256sum -c firectl.sha256
+  chmod +x firectl
   ```
 
 - Get Firecracker binary:
 
   ```
-  curl -LOJ https://github.com/firecracker-microvm/firecracker/releases/download/v0.12.0/firecracker-v0.12.0
-  chmod +x firecracker-v0.12.0
-  sudo mv firecracker-v0.12.0 /usr/local/bin/firecracker
+  curl -Lo firecracker https://github.com/firecracker-microvm/firecracker/releases/download/v0.16.0/firecracker-v0.16.0
+  chmod +x firecracker
+  sudo mv firecracker /usr/local/bin/firecracker
   ```
 
 - Give read/write access to KVM:
@@ -113,8 +112,7 @@ Getting Started on AWS
   ```
   ./firectl \
     --kernel=hello-vmlinux.bin \
-    --root-drive=hello-rootfs.ext4 \
-    --kernel-opts="console=ttyS0 noapic reboot=k panic=1 pci=off nomodules rw"
+    --root-drive=hello-rootfs.ext4
   ```
 
 Testing

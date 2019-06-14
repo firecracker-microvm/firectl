@@ -24,7 +24,11 @@ firectl.sha256:
 	sha256sum firectl > firectl.sha256
 
 firectl: $(SRCFILES)
+ifneq ($(STATIC_BINARY),)
+	CGO_ENABLED=0 go build -installsuffix cgo -a
+else
 	go build
+endif
 
 build-in-docker:
 	docker run --rm -v ${PWD}:/firectl --workdir /firectl golang:1.12 make

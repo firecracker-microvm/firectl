@@ -35,6 +35,10 @@ steps:
     agents:
       queue: "${BUILDKITE_AGENT_META_DATA_QUEUE:-default}"
 
+  - label: 'build static :link:'
+    commands:
+      - 'make STATIC_BINARY=1'
+      - '[[ -f ./firectl ]] && if ldd ./firectl; then echo "dynamic binary"; exit 1; else echo "static binary"; exit 0; fi'
   - label: ':hammer: tests'
     commands:
       # make is run to build the firectl binary used for the integration tests

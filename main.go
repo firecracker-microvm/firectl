@@ -128,7 +128,7 @@ func runVMM(ctx context.Context, opts *options) error {
 	}
 
 	if opts.validMetadata != nil {
-		m.EnableMetadata(opts.validMetadata)
+		m.SetMetadata(vmmCtx, opts.validMetadata)
 	}
 
 	if err := m.Start(vmmCtx); err != nil {

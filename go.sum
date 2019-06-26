@@ -7,14 +7,8 @@ github.com/asaskevich/govalidator v0.0.0-20180720115003-f9ffefc3facf/go.mod h1:l
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/docker/go-units v0.3.3/go.mod h1:fgPhTUdO+D/Jk86RDLlptpiXQzgHJF7gydDDbaIK4Dk=
-github.com/firecracker-microvm/firecracker-go-sdk v0.0.0-20181220230332-433f262dc33b h1:5vIdzbfLuWaResxGLVzoNbpg2LEjSkEzDoJLJpqJqeE=
-github.com/firecracker-microvm/firecracker-go-sdk v0.0.0-20181220230332-433f262dc33b/go.mod h1:7ZuTUkeKoyUmdR6Tn4eepqjYeKMXcOg9gJytYVz8TuE=
-github.com/firecracker-microvm/firecracker-go-sdk v0.0.0-20190226020201-847e85db1412 h1:RwIr6dztoblljoWEcoQJ26LATycGTrgSZg+/NJYMzrM=
-github.com/firecracker-microvm/firecracker-go-sdk v0.0.0-20190226020201-847e85db1412/go.mod h1:UOsA6IaI52MQntB9PrarJFReY1nA9iZg2DI04kxPNMY=
-github.com/firecracker-microvm/firecracker-go-sdk v0.15.1-0.20190301211204-479ac1377a66 h1:VyaTvfeBlTquUvE8S4OlYydnjNeESYxHJFZs6LCDTSo=
-github.com/firecracker-microvm/firecracker-go-sdk v0.15.1-0.20190301211204-479ac1377a66/go.mod h1:UOsA6IaI52MQntB9PrarJFReY1nA9iZg2DI04kxPNMY=
-github.com/firecracker-microvm/firecracker-go-sdk v0.15.1 h1:xtNAtwXMKXctB/CMn8tdTfpEzfqPUfqm7+Y3pYUSYZc=
-github.com/firecracker-microvm/firecracker-go-sdk v0.15.1/go.mod h1:QcNsz2gYkcTI/zAQl3dYeLwf7KxtjKnt7aGklhn9yYk=
+github.com/firecracker-microvm/firecracker-go-sdk v0.15.2-0.20190627223500-b2e8284e890c h1:jAAxKV5SD/y2nNKNLHgAUmfgbrvfN4xBiKR+b2qK2pM=
+github.com/firecracker-microvm/firecracker-go-sdk v0.15.2-0.20190627223500-b2e8284e890c/go.mod h1:QcNsz2gYkcTI/zAQl3dYeLwf7KxtjKnt7aGklhn9yYk=
 github.com/globalsign/mgo v0.0.0-20180905125535-1ca0a4f7cbcb h1:D4uzjWwKYQ5XnAvUbuvHW93esHg7F8N/OYeBBcJoTr0=
 github.com/globalsign/mgo v0.0.0-20180905125535-1ca0a4f7cbcb/go.mod h1:xkRDCp4j0OGD1HRkm4kmhM+pmpv3AKq5SU7GMg4oO/Q=
 github.com/go-openapi/analysis v0.0.0-20180825180245-b006789cd277/go.mod h1:k70tL6pCuVxPJOHXQ+wIac1FUrvNkHolPie/cLEU6hI=
@@ -43,8 +37,6 @@ github.com/go-openapi/swag v0.17.1/go.mod h1:AByQ+nYG6gQg71GINrmuDXCPWdL640yX49/
 github.com/go-openapi/validate v0.17.0/go.mod h1:Uh4HdOzKt19xGIGm1qHf/ofbX1YQ4Y+MYsct2VUrAJ4=
 github.com/go-openapi/validate v0.17.1 h1:RfQTLHm/gEu0oSUmbTOy0PMufjkE5/pPfnqYpor3WLc=
 github.com/go-openapi/validate v0.17.1/go.mod h1:Uh4HdOzKt19xGIGm1qHf/ofbX1YQ4Y+MYsct2VUrAJ4=
-github.com/golang/mock v1.1.1 h1:G5FRp8JnTd7RQH5kemVNlMeyXQAztQ3mOWV95KxsXH8=
-github.com/golang/mock v1.1.1/go.mod h1:oTYuIxOrZwtPieC+H1uAHpcLFnEyAGVDL/k47Jfbm0A=
 github.com/google/uuid v1.0.0 h1:b4Gk+7WdP/d3HZH8EJsZpvV7EtDOgaZLtnaNGIu1adA=
 github.com/google/uuid v1.0.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/jessevdk/go-flags v1.4.0 h1:4IU2WS7AumrZ/40jfhf4QVDMsQwqA7VEHozFRrGARJA=

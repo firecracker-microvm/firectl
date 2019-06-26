@@ -103,6 +103,8 @@ func (opts *options) getFirecrackerConfig() (firecracker.Config, error) {
 		socketPath = getSocketPath()
 	}
 
+	htEnabled := !opts.FcDisableHt
+
 	return firecracker.Config{
 		SocketPath:        socketPath,
 		LogFifo:           opts.FcLogFifo,
@@ -115,10 +117,10 @@ func (opts *options) getFirecrackerConfig() (firecracker.Config, error) {
 		NetworkInterfaces: NICs,
 		VsockDevices:      vsocks,
 		MachineCfg: models.MachineConfiguration{
-			VcpuCount:   opts.FcCPUCount,
+			VcpuCount:   firecracker.Int64(opts.FcCPUCount),
 			CPUTemplate: models.CPUTemplate(opts.FcCPUTemplate),
-			HtEnabled:   !opts.FcDisableHt,
-			MemSizeMib:  opts.FcMemSz,
+			HtEnabled:   firecracker.Bool(htEnabled),
+			MemSizeMib:  firecracker.Int64(opts.FcMemSz),
 		},
 		Debug: opts.Debug,
 	}, nil

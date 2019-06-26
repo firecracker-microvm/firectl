@@ -106,8 +106,8 @@ func TestFireCTL(t *testing.T) {
 		}
 
 		payload = resp.Payload
-		if len(resp.Payload.State) != 0 &&
-			payload.State != models.InstanceInfoStateUninitialized {
+		if len(*resp.Payload.State) != 0 &&
+			*payload.State != models.InstanceInfoStateUninitialized {
 			valid = true
 			break
 		}
@@ -116,6 +116,6 @@ func TestFireCTL(t *testing.T) {
 	}
 
 	if !valid {
-		t.Errorf("VM failed to initialize with last state of %q. Can firecracker successfully launch a VM?", payload.State)
+		t.Errorf("VM failed to initialize with last state of %q. Can firecracker successfully launch a VM?", *payload.State)
 	}
 }

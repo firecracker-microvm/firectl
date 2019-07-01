@@ -31,7 +31,7 @@ else
 endif
 
 build-in-docker:
-	docker run --rm -v ${PWD}:/firectl --workdir /firectl golang:1.12 make
+	docker run --rm -v $(CURDIR):/firectl --workdir /firectl golang:1.12 make
 
 test:
 	go test -v ./...
@@ -45,4 +45,4 @@ clean:
 install:
 	install -o root -g root -m755 firectl $(BINDIR)/
 
-.PHONY: all clean install
+.PHONY: all clean install build-in-docker test lint release

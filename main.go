@@ -127,14 +127,14 @@ func runVMM(ctx context.Context, opts *options) error {
 		return fmt.Errorf("Failed creating machine: %s", err)
 	}
 
-	if opts.validMetadata != nil {
-		m.SetMetadata(vmmCtx, opts.validMetadata)
-	}
-
 	if err := m.Start(vmmCtx); err != nil {
 		return fmt.Errorf("Failed to start machine: %v", err)
 	}
 	defer m.StopVMM()
+
+	if opts.validMetadata != nil {
+		m.SetMetadata(vmmCtx, opts.validMetadata)
+	}
 
 	installSignalHandlers(vmmCtx, m)
 

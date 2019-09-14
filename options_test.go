@@ -52,7 +52,7 @@ func TestGetFirecrackerConfig(t *testing.T) {
 		{
 			name: "Invalid network config",
 			opts: &options{
-				FcNicConfig: "no-slash",
+				FcNicConfig: []string{"no-slash"},
 			},
 			expectedErr: func(e error) (bool, error) {
 				return e == errInvalidNicConfig, errInvalidNicConfig
@@ -62,7 +62,7 @@ func TestGetFirecrackerConfig(t *testing.T) {
 		{
 			name: "Invalid drives",
 			opts: &options{
-				FcNicConfig:        "a/b",
+				FcNicConfig:        []string{"a/b"},
 				FcAdditionalDrives: []string{"/no-suffix"},
 			},
 			expectedErr: func(e error) (bool, error) {
@@ -73,7 +73,7 @@ func TestGetFirecrackerConfig(t *testing.T) {
 		{
 			name: "Invalid vsock addr",
 			opts: &options{
-				FcNicConfig:        "a/b",
+				FcNicConfig:        []string{"a/b"},
 				FcAdditionalDrives: []string{tempFile.Name() + ":ro"},
 				FcVsockDevices:     []string{"noCID"},
 			},
@@ -85,7 +85,7 @@ func TestGetFirecrackerConfig(t *testing.T) {
 		{
 			name: "Invalid fifo config",
 			opts: &options{
-				FcNicConfig:        "a/b",
+				FcNicConfig:        []string{"a/b"},
 				FcAdditionalDrives: []string{tempFile.Name() + ":ro"},
 				FcVsockDevices:     []string{"a:3"},
 				FcFifoLogFile:      tempFile.Name(),
@@ -499,7 +499,7 @@ func TestGetFirecrackerNetworkingConfig(t *testing.T) {
 		{
 			name: "non-empty but invalid FcNicConfig",
 			opt: options{
-				FcNicConfig: "invalid",
+				FcNicConfig: []string{"invalid"},
 			},
 			expectedErr: func(e error) (bool, error) {
 				return e == errInvalidNicConfig, errInvalidNicConfig
@@ -509,7 +509,7 @@ func TestGetFirecrackerNetworkingConfig(t *testing.T) {
 		{
 			name: "valid FcNicConfig with MMDS set to true",
 			opt: options{
-				FcNicConfig:   "valid/things",
+				FcNicConfig:   []string{"valid/things"},
 				validMetadata: 42,
 			},
 			expectedErr: func(e error) (bool, error) {
@@ -526,7 +526,7 @@ func TestGetFirecrackerNetworkingConfig(t *testing.T) {
 		{
 			name: "valid FcNicConfig with MMDS set to false",
 			opt: options{
-				FcNicConfig: "valid/things",
+				FcNicConfig: []string{"valid/things"},
 			},
 			expectedErr: func(e error) (bool, error) {
 				return e == nil, nil
@@ -535,6 +535,27 @@ func TestGetFirecrackerNetworkingConfig(t *testing.T) {
 				firecracker.NetworkInterface{
 					MacAddress:  "things",
 					HostDevName: "valid",
+					AllowMMDS:   false,
+				},
+			},
+		},
+		{
+			name: "Multiple valid FcNicConfig with MMDS set to false",
+			opt: options{
+				FcNicConfig: []string{"valid/things", "morevalid/morethings"},
+			},
+			expectedErr: func(e error) (bool, error) {
+				return e == nil, nil
+			},
+			expectedNic: []firecracker.NetworkInterface{
+				firecracker.NetworkInterface{
+					MacAddress:  "things",
+					HostDevName: "valid",
+					AllowMMDS:   false,
+				},
+				firecracker.NetworkInterface{
+					MacAddress:  "morethings",
+					HostDevName: "morevalid",
 					AllowMMDS:   false,
 				},
 			},

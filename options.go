@@ -43,7 +43,7 @@ type options struct {
 	FcRootDrivePath    string   `long:"root-drive" description:"Path to root disk image"`
 	FcRootPartUUID     string   `long:"root-partition" description:"Root partition UUID"`
 	FcAdditionalDrives []string `long:"add-drive" description:"Path to additional drive, suffixed with :ro or :rw, can be specified multiple times"`
-	FcNicConfig        string   `long:"tap-device" description:"NIC info, specified as DEVICE/MAC"`
+	FcNicConfig        []string `long:"tap-device" description:"NIC info, specified as DEVICE/MAC, can be specified multiple times"`
 	FcVsockDevices     []string `long:"vsock-device" description:"Vsock interface, specified as PATH:CID. Multiple OK"`
 	FcLogFifo          string   `long:"vmm-log-fifo" description:"FIFO for firecracker logs"`
 	FcLogLevel         string   `long:"log-level" description:"vmm log level" default:"Debug"`
@@ -129,17 +129,18 @@ func (opts *options) getFirecrackerConfig() (firecracker.Config, error) {
 func (opts *options) getNetwork() ([]firecracker.NetworkInterface, error) {
 	var NICs []firecracker.NetworkInterface
 	if len(opts.FcNicConfig) > 0 {
-		tapDev, tapMacAddr, err := parseNicConfig(opts.FcNicConfig)
-		if err != nil {
-			return nil, err
-		}
-		allowMMDS := opts.validMetadata != nil
-		NICs = []firecracker.NetworkInterface{
-			firecracker.NetworkInterface{
+		for _, nicConfig := range opts.FcNicConfig {
+			tapDev, tapMacAddr, err := parseNicConfig(nicConfig)
+			if err != nil {
+				return nil, err
+			}
+			allowMMDS := opts.validMetadata != nil
+			nic := firecracker.NetworkInterface{
 				MacAddress:  tapMacAddr,
 				HostDevName: tapDev,
 				AllowMMDS:   allowMMDS,
-			},
+			}
+			NICs = append(NICs, nic)
 		}
 	}
 	return NICs, nil

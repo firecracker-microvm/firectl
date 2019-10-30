@@ -136,9 +136,11 @@ func (opts *options) getNetwork() ([]firecracker.NetworkInterface, error) {
 			}
 			allowMMDS := opts.validMetadata != nil
 			nic := firecracker.NetworkInterface{
-				MacAddress:  tapMacAddr,
-				HostDevName: tapDev,
-				AllowMMDS:   allowMMDS,
+				StaticConfiguration: &firecracker.StaticNetworkConfiguration{
+					MacAddress:  tapMacAddr,
+					HostDevName: tapDev,
+				},
+				AllowMMDS: allowMMDS,
 			}
 			NICs = append(NICs, nic)
 		}

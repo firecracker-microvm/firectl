@@ -517,9 +517,11 @@ func TestGetFirecrackerNetworkingConfig(t *testing.T) {
 			},
 			expectedNic: []firecracker.NetworkInterface{
 				firecracker.NetworkInterface{
-					MacAddress:  "things",
-					HostDevName: "valid",
-					AllowMMDS:   true,
+					StaticConfiguration: &firecracker.StaticNetworkConfiguration{
+						MacAddress:  "things",
+						HostDevName: "valid",
+					},
+					AllowMMDS: true,
 				},
 			},
 		},
@@ -533,9 +535,11 @@ func TestGetFirecrackerNetworkingConfig(t *testing.T) {
 			},
 			expectedNic: []firecracker.NetworkInterface{
 				firecracker.NetworkInterface{
-					MacAddress:  "things",
-					HostDevName: "valid",
-					AllowMMDS:   false,
+					StaticConfiguration: &firecracker.StaticNetworkConfiguration{
+						MacAddress:  "things",
+						HostDevName: "valid",
+					},
+					AllowMMDS: false,
 				},
 			},
 		},
@@ -549,14 +553,18 @@ func TestGetFirecrackerNetworkingConfig(t *testing.T) {
 			},
 			expectedNic: []firecracker.NetworkInterface{
 				firecracker.NetworkInterface{
-					MacAddress:  "things",
-					HostDevName: "valid",
-					AllowMMDS:   false,
+					StaticConfiguration: &firecracker.StaticNetworkConfiguration{
+						MacAddress:  "things",
+						HostDevName: "valid",
+					},
+					AllowMMDS: false,
 				},
 				firecracker.NetworkInterface{
-					MacAddress:  "morethings",
-					HostDevName: "morevalid",
-					AllowMMDS:   false,
+					StaticConfiguration: &firecracker.StaticNetworkConfiguration{
+						MacAddress:  "morethings",
+						HostDevName: "morevalid",
+					},
+					AllowMMDS: false,
 				},
 			},
 		},

@@ -11,6 +11,12 @@
 # express or implied. See the License for the specific language governing
 # permissions and limitations under the License.
 
+env:
+  # Firectl tests will run against this version of firecracker:
+  FIRECRACKER_VERSION: 0.19.0
+  # Firecracker binaries will be installed and run from this directory:
+  BINDIR: "${HOME}/${BUILDKITE_BUILD_NUMBER}-bin"
+
 steps:
   - label: ':go: go mod download'
     command: 'go mod download'
@@ -41,8 +47,21 @@ steps:
       - '[[ -f ./firectl ]] && if ldd ./firectl; then echo "dynamic binary"; exit 1; else echo "static binary"; exit 0; fi'
   - label: ':hammer: tests'
     commands:
-      # make is run to build the firectl binary used for the integration tests
-      - "make"
-      - "KERNELIMAGE=/var/lib/fc-ci/vmlinux.bin make test"
+      # Install firecracker and jailer in a run-specifc PATH. This
+      # ensures that firectl is tested in its common configuration, in
+      # which it isn't explicitly given a path to a binary but uses
+      # PATH resolution to find it.
+      - "mkdir \"${BINDIR}\""
+      - "ln -s -v /usr/local/bin/firecracker-v${FIRECRACKER_VERSION} \"${BINDIR}/firecracker\""
+      - "ln -s -v \"/usr/local/bin/jailer-v${FIRECRACKER_VERSION}\" \"${BINDIR}/jailer\""
+      - "KERNELIMAGE=/var/lib/fc-ci/vmlinux.bin PATH=\"${BINDIR}:${PATH}\" make all test"
+    agents:
+      queue: "${BUILDKITE_AGENT_META_DATA_QUEUE:-default}"
+
+  - wait: ~
+    continue_on_failure: true
+  - label: 'cleanup'
+    commands:
+      - "rm -vrf \"${BINDIR}\""
     agents:
       queue: "${BUILDKITE_AGENT_META_DATA_QUEUE:-default}"

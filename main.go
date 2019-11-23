@@ -54,7 +54,8 @@ func main() {
 	}
 
 	if opts.Version {
-		fmt.Println(Version)
+		fmt.Println("Version:", Version)
+		fmt.Println("SupportedFirecrackerVersion:", SupportedFirecrackerVersion)
 		os.Exit(0)
 	}
 

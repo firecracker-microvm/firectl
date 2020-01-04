@@ -22,6 +22,8 @@ steps:
     command: 'go mod download'
     agents:
       queue: "${BUILDKITE_AGENT_META_DATA_QUEUE:-default}"
+      distro: "${BUILDKITE_AGENT_META_DATA_DISTRO}"
+      hostname: "${BUILDKITE_AGENT_META_DATA_HOSTNAME}"
 
 
   # We use a "wait" step here, because Go's module logic freaks out when
@@ -34,17 +36,26 @@ steps:
   - label: 'git log validation'
     command: './.buildkite/logcheck.sh'
     agents:
+      # This should run in the same queue, but we don't care whether it runs on
+      # the same host.
       queue: "${BUILDKITE_AGENT_META_DATA_QUEUE:-default}"
 
   - label: 'build'
     command: 'make'
     agents:
       queue: "${BUILDKITE_AGENT_META_DATA_QUEUE:-default}"
+      distro: "${BUILDKITE_AGENT_META_DATA_DISTRO}"
+      hostname: "${BUILDKITE_AGENT_META_DATA_HOSTNAME}"
 
   - label: 'build static :link:'
     commands:
       - 'make STATIC_BINARY=1'
       - '[[ -f ./firectl ]] && if ldd ./firectl; then echo "dynamic binary"; exit 1; else echo "static binary"; exit 0; fi'
+    agents:
+      queue: "${BUILDKITE_AGENT_META_DATA_QUEUE:-default}"
+      distro: "${BUILDKITE_AGENT_META_DATA_DISTRO}"
+      hostname: "${BUILDKITE_AGENT_META_DATA_HOSTNAME}"
+
   - label: ':hammer: tests'
     commands:
       # Install firecracker and jailer in a run-specifc PATH. This
@@ -57,3 +68,5 @@ steps:
       - "KERNELIMAGE=/var/lib/fc-ci/vmlinux.bin PATH=\"${BINDIR}:${PATH}\" make all test"
     agents:
       queue: "${BUILDKITE_AGENT_META_DATA_QUEUE:-default}"
+      distro: "${BUILDKITE_AGENT_META_DATA_DISTRO}"
+      hostname: "${BUILDKITE_AGENT_META_DATA_HOSTNAME}"

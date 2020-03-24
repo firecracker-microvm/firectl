@@ -16,9 +16,11 @@ installed on your computer.
 _We use [go modules](https://github.com/golang/go/wiki/Modules), so you need to
 build with Go 1.11 or newer._
 
-If you do not have a new-enough Go toolchain installed, you can use `make
-build-in-docker`.  This rule creates a temporary Docker container which builds
-and copies the binary to your current directory.
+If you do not have a new-enough Go toolchain installed, you can build in a
+temporary container - the binary is copied to your current directory:
+
+1. `make build-in-docker`
+1. `make build-in-podman`
 
 Usage
 ---

@@ -113,15 +113,18 @@ func runVMM(ctx context.Context, opts *options) error {
 		return fmt.Errorf("Binary, %q, is not executable. Check permissions of binary", firecrackerBinary)
 	}
 
-	cmd := firecracker.VMCommandBuilder{}.
-		WithBin(firecrackerBinary).
-		WithSocketPath(fcCfg.SocketPath).
-		WithStdin(os.Stdin).
-		WithStdout(os.Stdout).
-		WithStderr(os.Stderr).
-		Build(ctx)
+	// if the jailer is used, the final command will be built in NewMachine()
+	if fcCfg.JailerCfg == nil {
+		cmd := firecracker.VMCommandBuilder{}.
+			WithBin(firecrackerBinary).
+			WithSocketPath(fcCfg.SocketPath).
+			WithStdin(os.Stdin).
+			WithStdout(os.Stdout).
+			WithStderr(os.Stderr).
+			Build(ctx)
 
-	machineOpts = append(machineOpts, firecracker.WithProcessRunner(cmd))
+		machineOpts = append(machineOpts, firecracker.WithProcessRunner(cmd))
+	}
 
 	m, err := firecracker.NewMachine(vmmCtx, fcCfg, machineOpts...)
 	if err != nil {

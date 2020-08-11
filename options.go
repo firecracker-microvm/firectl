@@ -58,6 +58,17 @@ type options struct {
 	Debug              bool     `long:"debug" short:"d" description:"Enable debug output"`
 	Version            bool     `long:"version" description:"Outputs the version of the application"`
 
+	Id           string `long:"id" description:"Jailer VMM id"`
+	ExecFile     string `long:"exec-file" description:"Jailer executable"`
+	JailerBinary string `long:"jailer" description:"Jailer binary"`
+
+	Uid      int `long:"uid" description:"Jailer uid for dropping privileges"`
+	Gid      int `long:"gid" description:"Jailer gid for dropping privileges"`
+	NumaNode int `long:"node" description:"Jailer numa node"`
+
+	ChrootBaseDir string `long:"chroot-base-dir" description:"Jailer chroot base directory"`
+	Daemonize     bool   `long:"daemonize" description:"Run jailer as daemon"`
+
 	closers       []func() error
 	validMetadata interface{}
 
@@ -96,11 +107,41 @@ func (opts *options) getFirecrackerConfig() (firecracker.Config, error) {
 		return firecracker.Config{}, err
 	}
 
-	var socketPath string
-	if opts.FcSocketPath != "" {
-		socketPath = opts.FcSocketPath
+	var (
+		socketPath string
+		jail       *firecracker.JailerConfig
+	)
+
+	if opts.JailerBinary != "" {
+		jail = &firecracker.JailerConfig{
+			GID:            firecracker.Int(opts.Gid),
+			UID:            firecracker.Int(opts.Uid),
+			ID:             opts.Id,
+			NumaNode:       firecracker.Int(opts.NumaNode),
+			ExecFile:       opts.ExecFile,
+			JailerBinary:   opts.JailerBinary,
+			ChrootBaseDir:  opts.ChrootBaseDir,
+			Daemonize:      opts.Daemonize,
+			ChrootStrategy: firecracker.NewNaiveChrootStrategy(filepath.Join(
+				opts.ChrootBaseDir,
+				filepath.Base(opts.ExecFile),
+				opts.Id,
+			), opts.FcKernelImage),
+			// with: https://github.com/firecracker-microvm/firecracker-go-sdk/pull/255
+			// ChrootStrategy: firecracker.NewNaiveChrootStrategy(opts.FcKernelImage),
+			Stdout: os.Stdout,
+			Stderr: os.Stderr,
+			Stdin:  os.Stdin,
+		}
 	} else {
-		socketPath = getSocketPath()
+
+		// if no jail is active, either use the path from the arguments
+		if opts.FcSocketPath != "" {
+			socketPath = opts.FcSocketPath
+		} else {
+			// or generate a default socket path
+			socketPath = getSocketPath()
+		}
 	}
 
 	htEnabled := !opts.FcDisableHt
@@ -122,7 +163,8 @@ func (opts *options) getFirecrackerConfig() (firecracker.Config, error) {
 			HtEnabled:   firecracker.Bool(htEnabled),
 			MemSizeMib:  firecracker.Int64(opts.FcMemSz),
 		},
-		Debug: opts.Debug,
+		JailerCfg: jail,
+		VMID:      opts.Id,
 	}, nil
 }
 
@@ -312,8 +354,8 @@ func createFifoFileLogs(fifoPath string) (*os.File, error) {
 	return os.OpenFile(fifoPath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 }
 
-// getSocketPath provides a randomized socket path by building a unique fielname
-// and searching for the existance of directories {$HOME, os.TempDir()} and returning
+// getSocketPath provides a randomized socket path by building a unique filename
+// and searching for the existence of directories {$HOME, os.TempDir()} and returning
 // the path with the first directory joined with the unique filename. If we can't
 // find a good path panics.
 func getSocketPath() string {

@@ -12,6 +12,8 @@
 # permissions and limitations under the License.
 
 env:
+  # The CI system uses Debian 10 with go from stable backports:
+  PATH: "/usr/lib/go-1.13/bin:/usr/bin"
   # Firectl tests will run against this version of firecracker:
   FIRECRACKER_VERSION: 0.19.0
   # Firecracker binaries will be installed and run from this directory:

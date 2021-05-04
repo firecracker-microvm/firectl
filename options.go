@@ -123,11 +123,9 @@ func (opts *options) getFirecrackerConfig() (firecracker.Config, error) {
 			ChrootBaseDir:  opts.ChrootBaseDir,
 			Daemonize:      opts.Daemonize,
 			ChrootStrategy: firecracker.NewNaiveChrootStrategy(opts.FcKernelImage),
-			// with: https://github.com/firecracker-microvm/firecracker-go-sdk/pull/255
-			// ChrootStrategy: firecracker.NewNaiveChrootStrategy(opts.FcKernelImage),
-			Stdout: os.Stdout,
-			Stderr: os.Stderr,
-			Stdin:  os.Stdin,
+			Stdout:         os.Stdout,
+			Stderr:         os.Stderr,
+			Stdin:          os.Stdin,
 		}
 	} else {
 

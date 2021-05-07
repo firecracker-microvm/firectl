@@ -1,0 +1,32 @@
+name: Go
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        go: ['1.14', '1.15', '1.16']
+        os: ['ubuntu-20.04']
+
+    name: ${{ matrix.os }} / Go ${{ matrix.go }}
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v2
+      with:
+        go-version: ${{ matrix.go }}
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+
+    - name: Build
+      run: make all
+
+    # GitHub Actions' VMs don't have KVM. Firecracker itself won't work.
+    - name: Test
+      run: SKIP_INTEG_TEST=1 make test

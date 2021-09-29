@@ -18,6 +18,8 @@ env:
   FIRECRACKER_VERSION: 0.19.0
   # Firecracker binaries will be installed and run from this directory:
   BINDIR: "${PWD}-bin"
+  # Perform a clean checkout to ensure symlinks are gone
+  BUILDKITE_CLEAN_CHECKOUT: true
 
 steps:
   - label: ':go: go mod download'

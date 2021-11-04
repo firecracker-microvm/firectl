@@ -38,7 +38,7 @@ Application Options:
       --firecracker-binary=     Path to firecracker binary
       --kernel=                 Path to the kernel image (default: ./vmlinux)
       --kernel-opts=            Kernel commandline (default: ro console=ttyS0 noapic reboot=k panic=1 pci=off nomodules)
-      --root-drive=             Path to root disk image
+      --root-drive=             Path to root disk image, optionally suffixed with :ro or :rw
       --root-partition=         Root partition UUID
       --add-drive=              Path to additional drive, suffixed with :ro or :rw, can be specified multiple times
       --tap-device=             NIC info, specified as DEVICE/MAC

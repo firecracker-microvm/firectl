@@ -74,7 +74,7 @@ func TestGetFirecrackerConfig(t *testing.T) {
 			name: "Invalid vsock addr",
 			opts: &options{
 				FcNicConfig:        []string{"a/b"},
-				FcAdditionalDrives: []string{tempFile.Name() + ":ro"},
+				FcAdditionalDrives: []string{tempFile.Name() + roDeviceSuffix},
 				FcVsockDevices:     []string{"noCID"},
 			},
 			expectedErr: func(e error) (bool, error) {
@@ -86,7 +86,7 @@ func TestGetFirecrackerConfig(t *testing.T) {
 			name: "Invalid fifo config",
 			opts: &options{
 				FcNicConfig:        []string{"a/b"},
-				FcAdditionalDrives: []string{tempFile.Name() + ":ro"},
+				FcAdditionalDrives: []string{tempFile.Name() + roDeviceSuffix},
 				FcVsockDevices:     []string{"a:3"},
 				FcFifoLogFile:      tempFile.Name(),
 				createFifoFileLogs: func(_ string) (*os.File, error) {
@@ -164,6 +164,50 @@ func TestGetFirecrackerConfig(t *testing.T) {
 	}
 }
 
+func TestParseDevice(t *testing.T) {
+	const testPath = "/path"
+	cases := []struct {
+		name         string
+		entry        string
+		wantPath     string
+		wantReadOnly bool
+	}{
+		{
+			name:         "No drive suffix",
+			entry:        testPath,
+			wantPath:     testPath,
+			wantReadOnly: false,
+		},
+		{
+			name:         "Read-only drive suffix",
+			entry:        testPath + roDeviceSuffix,
+			wantPath:     testPath,
+			wantReadOnly: true,
+		},
+		{
+			name:         "Read-write drive suffix",
+			entry:        testPath + rwDeviceSuffix,
+			wantPath:     testPath,
+			wantReadOnly: false,
+		},
+	}
+
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			path, readOnly := parseDevice(c.entry)
+			if path != c.wantPath || readOnly != c.wantReadOnly {
+				t.Errorf("expected (path=%s, readonly=%t) but got (path=%s, readonly=%t) for entry %s",
+					c.wantPath,
+					c.wantReadOnly,
+					path,
+					readOnly,
+					c.entry,
+				)
+			}
+		})
+	}
+}
+
 func TestParseBlockDevices(t *testing.T) {
 	tempFile, err := ioutil.TempFile("", "firectl-test-drive-path")
 	if err != nil {
@@ -195,7 +239,7 @@ func TestParseBlockDevices(t *testing.T) {
 		},
 		{
 			name:      "No drive path",
-			in:        []string{":rw"},
+			in:        []string{rwDeviceSuffix},
 			outDrives: nil,
 			expectedErr: func(a error) bool {
 				return a == errInvalidDriveSpecificationNoPath
@@ -203,13 +247,13 @@ func TestParseBlockDevices(t *testing.T) {
 		},
 		{
 			name:        "non-existant drive path",
-			in:          []string{"/does/not/exist:ro"},
+			in:          []string{"/does/not/exist" + roDeviceSuffix},
 			outDrives:   nil,
 			expectedErr: os.IsNotExist,
 		},
 		{
 			name:      "valid drive path + suffix",
-			in:        []string{tempFile.Name() + ":rw"},
+			in:        []string{tempFile.Name() + rwDeviceSuffix},
 			outDrives: []models.Drive{validDrive},
 			expectedErr: func(a error) bool {
 				return a == nil
@@ -612,7 +656,7 @@ func TestGetBlockDevices(t *testing.T) {
 		{
 			name: "valid FcAdditionalDrives with valid Root drive",
 			opt: options{
-				FcAdditionalDrives: []string{tempFile.Name() + ":ro"},
+				FcAdditionalDrives: []string{tempFile.Name() + roDeviceSuffix},
 				FcRootDrivePath:    tempFile.Name(),
 				FcRootPartUUID:     "UUID",
 			},

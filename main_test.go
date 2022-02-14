@@ -107,7 +107,7 @@ func TestFireCTL(t *testing.T) {
 
 		payload = resp.Payload
 		if len(*resp.Payload.State) != 0 &&
-			*payload.State != models.InstanceInfoStateUninitialized {
+			*payload.State != models.InstanceInfoStateNotStarted {
 			valid = true
 			break
 		}

@@ -188,11 +188,13 @@ func (opts *options) getBlockDevices() ([]models.Drive, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	rootDrivePath, readOnly := parseDevice(opts.FcRootDrivePath)
 	rootDrive := models.Drive{
 		DriveID:      firecracker.String("1"),
-		PathOnHost:   &opts.FcRootDrivePath,
+		PathOnHost:   firecracker.String(rootDrivePath),
+		IsReadOnly:   firecracker.Bool(readOnly),
 		IsRootDevice: firecracker.Bool(true),
-		IsReadOnly:   firecracker.Bool(false),
 		Partuuid:     opts.FcRootPartUUID,
 	}
 	blockDevices = append(blockDevices, rootDrive)
@@ -274,7 +276,21 @@ func (opts *options) Close() {
 	}
 }
 
-// given a []string in the form of path:suffix converts to []modesl.Drive
+const (
+	rwDeviceSuffix = ":rw"
+	roDeviceSuffix = ":ro"
+)
+
+// Given a string in the form of path:suffix return the path and read-only marker
+func parseDevice(entry string) (path string, readOnly bool) {
+	if strings.HasSuffix(entry, roDeviceSuffix) {
+		return strings.TrimSuffix(entry, roDeviceSuffix), true
+	}
+
+	return strings.TrimSuffix(entry, rwDeviceSuffix), false
+}
+
+// given a []string in the form of path:suffix converts to []models.Drive
 func parseBlockDevices(entries []string) ([]models.Drive, error) {
 	devices := []models.Drive{}
 
@@ -282,11 +298,11 @@ func parseBlockDevices(entries []string) ([]models.Drive, error) {
 		path := ""
 		readOnly := true
 
-		if strings.HasSuffix(entry, ":rw") {
+		if strings.HasSuffix(entry, rwDeviceSuffix) {
 			readOnly = false
-			path = strings.TrimSuffix(entry, ":rw")
-		} else if strings.HasSuffix(entry, ":ro") {
-			path = strings.TrimSuffix(entry, ":ro")
+			path = strings.TrimSuffix(entry, rwDeviceSuffix)
+		} else if strings.HasSuffix(entry, roDeviceSuffix) {
+			path = strings.TrimSuffix(entry, roDeviceSuffix)
 		} else {
 			return nil, errInvalidDriveSpecificationNoSuffix
 		}

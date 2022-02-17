@@ -48,7 +48,7 @@ type options struct {
 	FcLogFifo          string   `long:"vmm-log-fifo" description:"FIFO for firecracker logs"`
 	FcLogLevel         string   `long:"log-level" description:"vmm log level" default:"Debug"`
 	FcMetricsFifo      string   `long:"metrics-fifo" description:"FIFO for firecracker metrics"`
-	FcDisableHt        bool     `long:"disable-hyperthreading" short:"t" description:"Disable CPU Hyperthreading"`
+	FcDisableSmt       bool     `long:"disable-smt" short:"t" description:"Disable CPU Simultaneous Multithreading"`
 	FcCPUCount         int64    `long:"ncpus" short:"c" description:"Number of CPUs" default:"1"`
 	FcCPUTemplate      string   `long:"cpu-template" description:"Firecracker CPU Template (C3 or T2)"`
 	FcMemSz            int64    `long:"memory" short:"m" description:"VM memory, in MiB" default:"512"`
@@ -138,8 +138,6 @@ func (opts *options) getFirecrackerConfig() (firecracker.Config, error) {
 		}
 	}
 
-	htEnabled := !opts.FcDisableHt
-
 	return firecracker.Config{
 		SocketPath:        socketPath,
 		LogFifo:           opts.FcLogFifo,
@@ -154,7 +152,7 @@ func (opts *options) getFirecrackerConfig() (firecracker.Config, error) {
 		MachineCfg: models.MachineConfiguration{
 			VcpuCount:   firecracker.Int64(opts.FcCPUCount),
 			CPUTemplate: models.CPUTemplate(opts.FcCPUTemplate),
-			HtEnabled:   firecracker.Bool(htEnabled),
+			Smt:         firecracker.Bool(!opts.FcDisableSmt),
 			MemSizeMib:  firecracker.Int64(opts.FcMemSz),
 		},
 		JailerCfg: jail,

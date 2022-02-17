@@ -120,7 +120,7 @@ func TestGetFirecrackerConfig(t *testing.T) {
 				MachineCfg: models.MachineConfiguration{
 					VcpuCount:  firecracker.Int64(0),
 					MemSizeMib: firecracker.Int64(0),
-					HtEnabled:  firecracker.Bool(true),
+					Smt:        firecracker.Bool(true),
 				},
 			},
 		},
@@ -145,7 +145,7 @@ func TestGetFirecrackerConfig(t *testing.T) {
 				MachineCfg: models.MachineConfiguration{
 					VcpuCount:  firecracker.Int64(0),
 					MemSizeMib: firecracker.Int64(0),
-					HtEnabled:  firecracker.Bool(true),
+					Smt:        firecracker.Bool(true),
 				},
 			},
 		},

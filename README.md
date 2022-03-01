@@ -46,7 +46,7 @@ Application Options:
       --vmm-log-fifo=           FIFO for firecracker logs
       --log-level=              vmm log level (default: Debug)
       --metrics-fifo=           FIFO for firecracker metrics
-  -t, --disable-hyperthreading  Disable CPU Hyperthreading
+  -t, --disable-smt             Disable CPU Simultaneous Multithreading
   -c, --ncpus=                  Number of CPUs (default: 1)
       --cpu-template=           Firecracker CPU Template (C3 or T2)
   -m, --memory=                 VM memory, in MiB (default: 512)

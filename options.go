@@ -40,6 +40,7 @@ type options struct {
 	FcBinary           string   `long:"firecracker-binary" description:"Path to firecracker binary"`
 	FcKernelImage      string   `long:"kernel" description:"Path to the kernel image" default:"./vmlinux"`
 	FcKernelCmdLine    string   `long:"kernel-opts" description:"Kernel commandline" default:"ro console=ttyS0 noapic reboot=k panic=1 pci=off nomodules"`
+	FcInitrd           string   `long:"initrd-path" description:"Path to initrd"`
 	FcRootDrivePath    string   `long:"root-drive" description:"Path to root disk image"`
 	FcRootPartUUID     string   `long:"root-partition" description:"Root partition UUID"`
 	FcAdditionalDrives []string `long:"add-drive" description:"Path to additional drive, suffixed with :ro or :rw, can be specified multiple times"`
@@ -146,6 +147,7 @@ func (opts *options) getFirecrackerConfig() (firecracker.Config, error) {
 		FifoLogWriter:     fifo,
 		KernelImagePath:   opts.FcKernelImage,
 		KernelArgs:        opts.FcKernelCmdLine,
+		InitrdPath:        opts.FcInitrd,
 		Drives:            blockDevices,
 		NetworkInterfaces: NICs,
 		VsockDevices:      vsocks,

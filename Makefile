@@ -39,8 +39,12 @@ test:
 $(BINPATH)/ltag:
 	GOBIN=$(BINPATH) GO111MODULE=off go get -u github.com/kunalkushwaha/ltag
 
-lint: $(BINPATH)/ltag
+$(BINPATH)/git-validation:
+	GOBIN=$(BINPATH) GO111MODULE=off go get -u github.com/vbatts/git-validation
+
+lint: $(BINPATH)/ltag $(BINPATH)/git-validation
 	$(BINPATH)/ltag -v -t ./.headers -check
+	$(BINPATH)/git-validation -q -run DCO,short-subject -range HEAD~3..HEAD
 	golint $(SRCFILES)
 
 clean:

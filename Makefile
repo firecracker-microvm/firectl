@@ -1,4 +1,4 @@
-# Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"). You may
 # not use this file except in compliance with the License. A copy of the
@@ -12,8 +12,8 @@
 # permissions and limitations under the License.
 SRCFILES := *.go go.sum go.mod
 
-INSTALLROOT ?= /usr/local
-BINDIR ?= $(INSTALLROOT)/bin
+INSTALLPATH ?= /usr/local/bin
+BINPATH:=$(abspath ./bin)
 
 all: firectl
 
@@ -36,13 +36,17 @@ build-in-docker:
 test:
 	go test -v ./...
 
-lint:
+$(BINPATH)/ltag:
+	GOBIN=$(BINPATH) GO111MODULE=off go get -u github.com/kunalkushwaha/ltag
+
+lint: $(BINPATH)/ltag
+	$(BINPATH)/ltag -v -t ./.headers -check
 	golint $(SRCFILES)
 
 clean:
 	go clean
 
 install:
-	install -o root -g root -m755 firectl $(BINDIR)/
+	install -o root -g root -m755 -t $(INSTALLPATH) firectl
 
 .PHONY: all clean install build-in-docker test lint release

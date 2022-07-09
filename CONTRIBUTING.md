@@ -55,7 +55,7 @@ opensource-codeofconduct@amazon.com with any additional questions or comments.
 
 The sign-off is a simple line at the end of the explanation for the patch. Your
 signature certifies that you wrote the patch or otherwise have the right to pass
-it on as an open-source patch. The rules are pretty simple: if you can certify
+it on as an open-source patch. If you can certify
 the below (from [developercertificate.org](http://developercertificate.org/)):
 
 ```

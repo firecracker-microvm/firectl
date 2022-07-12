@@ -24,6 +24,9 @@ jobs:
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
 
+    - name: Run static analysis
+      run: make lint
+
     - name: Build
       run: make all
 

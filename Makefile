@@ -1,4 +1,4 @@
-# Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"). You may
 # not use this file except in compliance with the License. A copy of the
@@ -12,8 +12,8 @@
 # permissions and limitations under the License.
 SRCFILES := *.go go.sum go.mod
 
-INSTALLROOT ?= /usr/local
-BINDIR ?= $(INSTALLROOT)/bin
+INSTALLPATH ?= /usr/local/bin
+BINPATH:=$(abspath ./bin)
 
 all: firectl
 
@@ -36,13 +36,25 @@ build-in-docker:
 test:
 	go test -v ./...
 
-lint:
-	golint $(SRCFILES)
+$(BINPATH)/ltag:
+	GOBIN=$(BINPATH) GO111MODULE=off go get -u github.com/kunalkushwaha/ltag
+
+$(BINPATH)/git-validation:
+	GOBIN=$(BINPATH) GO111MODULE=off go get -u github.com/vbatts/git-validation
+
+$(BINPATH)/golangci-lint:
+	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(BINPATH) v1.46.2
+	$(BINPATH)/golangci-lint --version
+
+lint: $(BINPATH)/ltag $(BINPATH)/git-validation $(BINPATH)/golangci-lint
+	$(BINPATH)/ltag -v -t ./.headers -check
+	$(BINPATH)/git-validation -q -run DCO,short-subject -range HEAD~3..HEAD
+	$(BINPATH)/golangci-lint run
 
 clean:
 	go clean
 
 install:
-	install -o root -g root -m755 firectl $(BINDIR)/
+	install -o root -g root -m755 -t $(INSTALLPATH) firectl
 
 .PHONY: all clean install build-in-docker test lint release

@@ -1,4 +1,4 @@
-// Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License"). You may
 // not use this file except in compliance with the License. A copy of the
@@ -110,7 +110,7 @@ func TestGetFirecrackerConfig(t *testing.T) {
 			outConfig: firecracker.Config{
 				SocketPath: "/some/path/here",
 				Drives: []models.Drive{
-					models.Drive{
+					{
 						DriveID:      firecracker.String("1"),
 						PathOnHost:   firecracker.String(""),
 						IsRootDevice: firecracker.Bool(true),
@@ -135,7 +135,7 @@ func TestGetFirecrackerConfig(t *testing.T) {
 			outConfig: firecracker.Config{
 				SocketPath: "valid/path",
 				Drives: []models.Drive{
-					models.Drive{
+					{
 						DriveID:      firecracker.String("1"),
 						PathOnHost:   firecracker.String(""),
 						IsRootDevice: firecracker.Bool(true),
@@ -352,7 +352,7 @@ func TestParseVsocks(t *testing.T) {
 			name: "valid input",
 			in:   []string{"a:3"},
 			outDevices: []firecracker.VsockDevice{
-				firecracker.VsockDevice{
+				{
 					Path: "a",
 					CID:  uint32(3),
 				},
@@ -560,7 +560,7 @@ func TestGetFirecrackerNetworkingConfig(t *testing.T) {
 				return e == nil, nil
 			},
 			expectedNic: []firecracker.NetworkInterface{
-				firecracker.NetworkInterface{
+				{
 					StaticConfiguration: &firecracker.StaticNetworkConfiguration{
 						MacAddress:  "things",
 						HostDevName: "valid",
@@ -578,7 +578,7 @@ func TestGetFirecrackerNetworkingConfig(t *testing.T) {
 				return e == nil, nil
 			},
 			expectedNic: []firecracker.NetworkInterface{
-				firecracker.NetworkInterface{
+				{
 					StaticConfiguration: &firecracker.StaticNetworkConfiguration{
 						MacAddress:  "things",
 						HostDevName: "valid",
@@ -596,14 +596,14 @@ func TestGetFirecrackerNetworkingConfig(t *testing.T) {
 				return e == nil, nil
 			},
 			expectedNic: []firecracker.NetworkInterface{
-				firecracker.NetworkInterface{
+				{
 					StaticConfiguration: &firecracker.StaticNetworkConfiguration{
 						MacAddress:  "things",
 						HostDevName: "valid",
 					},
 					AllowMMDS: false,
 				},
-				firecracker.NetworkInterface{
+				{
 					StaticConfiguration: &firecracker.StaticNetworkConfiguration{
 						MacAddress:  "morethings",
 						HostDevName: "morevalid",
@@ -664,13 +664,13 @@ func TestGetBlockDevices(t *testing.T) {
 				return e == nil, nil
 			},
 			expectedDrives: []models.Drive{
-				models.Drive{
+				{
 					DriveID:      firecracker.String("2"),
 					PathOnHost:   firecracker.String(tempFile.Name()),
 					IsReadOnly:   firecracker.Bool(true),
 					IsRootDevice: firecracker.Bool(false),
 				},
-				models.Drive{
+				{
 					DriveID:      firecracker.String("1"),
 					PathOnHost:   firecracker.String(tempFile.Name()),
 					IsRootDevice: firecracker.Bool(true),

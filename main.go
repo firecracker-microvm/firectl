@@ -1,4 +1,4 @@
-// Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License"). You may
 // not use this file except in compliance with the License. A copy of the
@@ -134,10 +134,16 @@ func runVMM(ctx context.Context, opts *options) error {
 	if err := m.Start(vmmCtx); err != nil {
 		return fmt.Errorf("Failed to start machine: %v", err)
 	}
-	defer m.StopVMM()
+	defer func() {
+		if err := m.StopVMM(); err != nil {
+			log.Errorf("An error occurred while stopping Firecracker VMM: %v", err)
+		}
+	}()
 
 	if opts.validMetadata != nil {
-		m.SetMetadata(vmmCtx, opts.validMetadata)
+		if err := m.SetMetadata(vmmCtx, opts.validMetadata); err != nil {
+			log.Errorf("An error occurred while setting Firecracker VM metadata: %v", err)
+		}
 	}
 
 	installSignalHandlers(vmmCtx, m)
@@ -162,10 +168,14 @@ func installSignalHandlers(ctx context.Context, m *firecracker.Machine) {
 			switch s := <-c; {
 			case s == syscall.SIGTERM || s == os.Interrupt:
 				log.Printf("Caught signal: %s, requesting clean shutdown", s.String())
-				m.Shutdown(ctx)
+				if err := m.Shutdown(ctx); err != nil {
+					log.Errorf("An error occurred while shutting down Firecracker VM: %v", err)
+				}
 			case s == syscall.SIGQUIT:
 				log.Printf("Caught signal: %s, forcing shutdown", s.String())
-				m.StopVMM()
+				if err := m.StopVMM(); err != nil {
+					log.Errorf("An error occurred while stopping Firecracker VMM: %v", err)
+				}
 			}
 		}
 	}()

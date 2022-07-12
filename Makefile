@@ -31,7 +31,7 @@ else
 endif
 
 build-in-docker:
-	docker run --rm -v $(CURDIR):/firectl --workdir /firectl golang:1.12 make
+	docker run --rm -v $(CURDIR):/firectl --workdir /firectl golang:1.14 make
 
 test:
 	go test -v ./...

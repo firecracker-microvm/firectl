@@ -13,8 +13,8 @@ Building
 
 The default Makefile rule executes `go build` and relies on the Go toolchain
 installed on your computer.
-_We use [go modules](https://github.com/golang/go/wiki/Modules), so you need to
-build with Go 1.11 or newer._
+_We use [go modules](https://github.com/golang/go/wiki/Modules), and building
+requires Go 1.14 or newer._
 
 If you do not have a new-enough Go toolchain installed, you can use `make
 build-in-docker`.  This rule creates a temporary Docker container which builds

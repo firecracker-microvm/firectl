@@ -26,7 +26,6 @@ import (
 
 	firecracker "github.com/firecracker-microvm/firecracker-go-sdk"
 	models "github.com/firecracker-microvm/firecracker-go-sdk/client/models"
-	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -81,8 +80,7 @@ func (opts *options) getFirecrackerConfig() (firecracker.Config, error) {
 	// validate metadata json
 	if opts.FcMetadata != "" {
 		if err := json.Unmarshal([]byte(opts.FcMetadata), &opts.validMetadata); err != nil {
-			return firecracker.Config{},
-				errors.Wrap(err, errInvalidMetadata.Error())
+			return firecracker.Config{}, fmt.Errorf("%s: %v", errInvalidMetadata.Error(), err)
 		}
 	}
 	//setup NICs
@@ -226,7 +224,7 @@ func (opts *options) handleFifos() (io.Writer, error) {
 			generateMetricFifoFilename = true
 		}
 		if fifo, err = opts.createFifoFileLogs(opts.FcFifoLogFile); err != nil {
-			return nil, errors.Wrap(err, errUnableToCreateFifoLogFile.Error())
+			return nil, fmt.Errorf("%s: %v", errUnableToCreateFifoLogFile.Error(), err)
 		}
 		opts.addCloser(func() error {
 			return fifo.Close()

@@ -22,7 +22,21 @@ jobs:
         go-version: ${{ matrix.go }}
 
     - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
+      with:
+        # By default, the checkout action only fetches the last commit,
+        # but we want to run DCO check against all commit messages.
+        # Assuming that a pull request may have multiple commits,
+        # fetching the single commit doesn't work for us.
+        #
+        # While DCO check (on Makefile) checks latest 5 commits,
+        # the checkout action automatically creates a merge commit
+        # for merging "main" into a pull request branch.
+        # In addition to that, Git cannot recognize merge commits when
+        # one of the parents is missing.
+        # So, we will fetch 15 commits just in case to have
+        # 5 actual commits with associated merged commits.
+        fetch-depth: 15
 
     - name: Run static analysis
       run: make lint

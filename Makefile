@@ -58,7 +58,7 @@ $(BINPATH)/golangci-lint:
 
 lint: $(BINPATH)/ltag $(BINPATH)/git-validation $(BINPATH)/golangci-lint
 	$(BINPATH)/ltag -v -t ./.headers -check
-	$(BINPATH)/git-validation -q -run DCO,short-subject -range HEAD~3..HEAD
+	$(BINPATH)/git-validation -q -run DCO,short-subject -range HEAD~5..HEAD
 	$(BINPATH)/golangci-lint run
 
 clean:

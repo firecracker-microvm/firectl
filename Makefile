@@ -36,11 +36,21 @@ build-in-docker:
 test:
 	go test -v ./...
 
+GO_MINOR_VERSION = $(shell go version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f2)
+
 $(BINPATH)/ltag:
-	GOBIN=$(BINPATH) GO111MODULE=off go get -u github.com/kunalkushwaha/ltag
+	@if [ $(GO_MINOR_VERSION) -lt 16 ]; then \
+		GOBIN=$(BINPATH) GO111MODULE=on go get -u github.com/kunalkushwaha/ltag@v0.2.3; \
+	else \
+		GOBIN=$(BINPATH) GO111MODULE=on go install github.com/kunalkushwaha/ltag@v0.2.3; \
+	fi
 
 $(BINPATH)/git-validation:
-	GOBIN=$(BINPATH) GO111MODULE=off go get -u github.com/vbatts/git-validation
+	@if [ $(GO_MINOR_VERSION) -lt 16 ]; then \
+		GOBIN=$(BINPATH) GO111MODULE=on go get -u github.com/vbatts/git-validation@v1.1.0; \
+	else \
+		GOBIN=$(BINPATH) GO111MODULE=on go install github.com/vbatts/git-validation@v1.1.0; \
+	fi
 
 $(BINPATH)/golangci-lint:
 	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(BINPATH) v1.46.2

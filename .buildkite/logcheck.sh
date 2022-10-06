@@ -20,14 +20,16 @@ fi
 found_fixups=0
 missing_dco=0
 
+set
+
 for sha in $(git log --pretty=%H --no-decorate \
              "${BUILDKITE_PULL_REQUEST_BASE_BRANCH}"..HEAD); do
-    git show --pretty=oneline --no-decorate --no-patch $sha \
+    git show --pretty=oneline --no-decorate --no-patch "${sha}" \
       | fgrep -q 'fixup!' && {
         found_fixups=1
         echo "Found fixup commit $sha"
     }
-    git show --pretty=medium --no-decorate --no-patch $sha \
+    git show --pretty=medium --no-decorate --no-patch "${sha}" \
       | fgrep -q Signed-off-by: || {
         missing_dco=1
         echo "Missing DCO on $sha"

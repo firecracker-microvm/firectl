@@ -40,14 +40,14 @@ GO_MINOR_VERSION = $(shell go version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -
 
 $(BINPATH)/ltag:
 	@if [ $(GO_MINOR_VERSION) -lt 16 ]; then \
-		GOBIN=$(BINPATH) GO111MODULE=on go get -u github.com/kunalkushwaha/ltag@v0.2.3; \
+		GOBIN=$(BINPATH) GO111MODULE=on go get github.com/kunalkushwaha/ltag@v0.2.3; \
 	else \
 		GOBIN=$(BINPATH) GO111MODULE=on go install github.com/kunalkushwaha/ltag@v0.2.3; \
 	fi
 
 $(BINPATH)/git-validation:
 	@if [ $(GO_MINOR_VERSION) -lt 16 ]; then \
-		GOBIN=$(BINPATH) GO111MODULE=on go get -u github.com/vbatts/git-validation@v1.1.0; \
+		GOBIN=$(BINPATH) GO111MODULE=on go get github.com/vbatts/git-validation@v1.1.0; \
 	else \
 		GOBIN=$(BINPATH) GO111MODULE=on go install github.com/vbatts/git-validation@v1.1.0; \
 	fi

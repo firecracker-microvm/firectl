@@ -30,27 +30,14 @@ else
 	go build
 endif
 
-build-in-docker:
-	docker run --rm -v $(CURDIR):/firectl --workdir /firectl golang:1.14 make
-
 test:
 	go test -v ./...
 
-GO_MINOR_VERSION = $(shell go version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f2)
-
 $(BINPATH)/ltag:
-	@if [ $(GO_MINOR_VERSION) -lt 16 ]; then \
-		GOBIN=$(BINPATH) GO111MODULE=on go get github.com/kunalkushwaha/ltag@v0.2.3; \
-	else \
-		GOBIN=$(BINPATH) GO111MODULE=on go install github.com/kunalkushwaha/ltag@v0.2.3; \
-	fi
+	GOBIN=$(BINPATH) GO111MODULE=on go install github.com/kunalkushwaha/ltag@v0.2.3
 
 $(BINPATH)/git-validation:
-	@if [ $(GO_MINOR_VERSION) -lt 16 ]; then \
-		GOBIN=$(BINPATH) GO111MODULE=on go get github.com/vbatts/git-validation@v1.1.0; \
-	else \
-		GOBIN=$(BINPATH) GO111MODULE=on go install github.com/vbatts/git-validation@v1.1.0; \
-	fi
+	GOBIN=$(BINPATH) GO111MODULE=on go install github.com/vbatts/git-validation@v1.1.0
 
 $(BINPATH)/golangci-lint:
 	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(BINPATH) v1.46.2
@@ -67,4 +54,4 @@ clean:
 install:
 	install -o root -g root -m755 -t $(INSTALLPATH) firectl
 
-.PHONY: all clean install build-in-docker test lint release
+.PHONY: all clean install test lint release

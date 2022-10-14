@@ -12,18 +12,40 @@
 # permissions and limitations under the License.
 
 env:
-  # The CI system uses Debian 10 with go from stable backports:
-  PATH: "/usr/lib/go-1.15/bin:/usr/bin"
+  # Firectl tests will be built with this version of the Go compiler:
+  GO_VERSION: 1.17
   # Firectl tests will run against this version of firecracker:
   FIRECRACKER_VERSION: 1.0.0
   # Firecracker binaries will be installed and run from this directory:
-  BINDIR: "${PWD}-bin"
+  BINDIR: "${PWD}/bin"
   # Perform a clean checkout to ensure symlinks are gone
   BUILDKITE_CLEAN_CHECKOUT: true
 
 steps:
+  - label: ':firecracker: setup firecracker and jailer binaries'
+    command:
+      # Install firecracker and jailer in a run-specifc PATH. This
+      # ensures that firectl is tested in its common configuration, in
+      # which it isn't explicitly given a path to a binary but uses
+      # PATH resolution to find it.
+      - "mkdir \"${BINDIR}\""
+      - "ln -s -v \"/usr/local/bin/firecracker-v${FIRECRACKER_VERSION}\" \"${BINDIR}/firecracker\""
+      - "ln -s -v \"/usr/local/bin/jailer-v${FIRECRACKER_VERSION}\" \"${BINDIR}/jailer\""
+      - "ln -s -v /var/lib/fc-ci/vmlinux.bin \"${BINDIR}/vmlinux.bin\""
+    agents:
+      queue: "${BUILDKITE_AGENT_META_DATA_QUEUE:-default}"
+      distro: "${BUILDKITE_AGENT_META_DATA_DISTRO}"
+      hostname: "${BUILDKITE_AGENT_META_DATA_HOSTNAME}"
+
   - label: ':go: go mod download'
-    command: 'go mod download'
+    command:
+      - "go mod download"
+    plugins:
+      - docker#v5.2.0:
+        image: "golang:${GO_VERSION}"
+        volumes:
+          - "${PWD}:/firectl"
+        workdir: "/firectl"
     agents:
       queue: "${BUILDKITE_AGENT_META_DATA_QUEUE:-default}"
       distro: "${BUILDKITE_AGENT_META_DATA_DISTRO}"
@@ -37,24 +59,39 @@ steps:
   # Git history validation happens after the 'wait' step so it happens
   # in parallel with the subsequent tests and does not prevent them
   # from running in the event of a validation failure.
-  - label: 'git log validation'
+  - label: ':git: git log validation'
     command: './.buildkite/logcheck.sh'
     agents:
       # This should run in the same queue, but we don't care whether it runs on
       # the same host.
       queue: "${BUILDKITE_AGENT_META_DATA_QUEUE:-default}"
 
-  - label: 'build'
-    command: 'make'
+  - label: ':docker: build'
+    command:
+      - "make"
+    plugins:
+      - docker#v5.2.0:
+        image: "golang:${GO_VERSION}"
+        volumes:
+          - "${PWD}:/firectl"
+        workdir: "/firectl"
     agents:
       queue: "${BUILDKITE_AGENT_META_DATA_QUEUE:-default}"
       distro: "${BUILDKITE_AGENT_META_DATA_DISTRO}"
       hostname: "${BUILDKITE_AGENT_META_DATA_HOSTNAME}"
 
-  - label: 'build static :link:'
-    commands:
-      - 'make STATIC_BINARY=1'
+  - label: ':docker: build static'
+    command:
+      - "make"
       - '[[ -f ./firectl ]] && if ldd ./firectl; then echo "dynamic binary"; exit 1; else echo "static binary"; exit 0; fi'
+    plugins:
+      - docker#v5.2.0:
+        image: "golang:${GO_VERSION}"
+        environment:
+          - "STATIC_BINARY=1"
+        volumes:
+          - "${PWD}:/firectl"
+        workdir: "/firectl"
     agents:
       queue: "${BUILDKITE_AGENT_META_DATA_QUEUE:-default}"
       distro: "${BUILDKITE_AGENT_META_DATA_DISTRO}"
@@ -62,14 +99,17 @@ steps:
 
   - label: ':hammer: tests'
     commands:
-      # Install firecracker and jailer in a run-specifc PATH. This
-      # ensures that firectl is tested in its common configuration, in
-      # which it isn't explicitly given a path to a binary but uses
-      # PATH resolution to find it.
-      - "mkdir \"${BINDIR}\""
-      - "ln -s -v /usr/local/bin/firecracker-v${FIRECRACKER_VERSION} \"${BINDIR}/firecracker\""
-      - "ln -s -v \"/usr/local/bin/jailer-v${FIRECRACKER_VERSION}\" \"${BINDIR}/jailer\""
-      - "KERNELIMAGE=/var/lib/fc-ci/vmlinux.bin PATH=\"${BINDIR}:${PATH}\" make all test"
+      - "make all test"
+    plugins:
+      - docker#v5.2.0:
+        image: "golang:${GO_VERSION}"
+        environment:
+          - "KERNELIMAGE=/artifacts/vmlinux.bin"
+          - "PATH=/artifacts"
+        volumes:
+          - "${PWD}:/firectl"
+          - "${BINDIR}:/artifacts"
+        workdir: "/firectl"
     agents:
       queue: "${BUILDKITE_AGENT_META_DATA_QUEUE:-default}"
       distro: "${BUILDKITE_AGENT_META_DATA_DISTRO}"

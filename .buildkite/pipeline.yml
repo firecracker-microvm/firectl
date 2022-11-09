@@ -66,7 +66,7 @@ steps:
       # ensures that firectl is tested in its common configuration, in
       # which it isn't explicitly given a path to a binary but uses
       # PATH resolution to find it.
-      - "mkdir \"${BINDIR}\""
+      - "mkdir -p \"${BINDIR}\""
       - "ln -s -v /usr/local/bin/firecracker-v${FIRECRACKER_VERSION} \"${BINDIR}/firecracker\""
       - "ln -s -v \"/usr/local/bin/jailer-v${FIRECRACKER_VERSION}\" \"${BINDIR}/jailer\""
       - "KERNELIMAGE=/var/lib/fc-ci/vmlinux.bin PATH=\"${BINDIR}:${PATH}\" make all test"

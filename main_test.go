@@ -19,6 +19,7 @@ import (
 	"os/exec"
 	"syscall"
 	"testing"
+	"runtime"
 	"time"
 
 	models "github.com/firecracker-microvm/firecracker-go-sdk/client/models"
@@ -72,6 +73,11 @@ func TestFireCTL(t *testing.T) {
 		"--root-drive",
 		rootDrivePath,
 	}
+
+	if runtime.GOARCH == "arm64" {
+		firectlArgs = append(firectlArgs, "--disable-smt") // Disable simultaneous multithreading is supported by aarch64
+	}
+
 	cmd := exec.CommandContext(ctlCtx, firectlName, firectlArgs...)
 	if err := cmd.Start(); err != nil {
 		t.Fatalf("Failed to run command: %v", err)

@@ -10,14 +10,14 @@ jobs:
   build:
     strategy:
       matrix:
-        go: ['1.14', '1.15', '1.16']
+        go: ['1.14', '1.15', '1.16', '1.17', '1.18', '1.19', '1.20']
         os: ['ubuntu-20.04']
 
     name: ${{ matrix.os }} / Go ${{ matrix.go }}
     runs-on: ${{ matrix.os }}
     steps:
     - name: Set up Go 1.x
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v3
       with:
         go-version: ${{ matrix.go }}
 

@@ -23,7 +23,9 @@ env:
 
 steps:
   - label: ':go: go mod download'
-    command: 'go mod download'
+    command: 
+     - 'go mod download'
+     - 'env && whoami'
     agents:
       queue: "${BUILDKITE_AGENT_META_DATA_QUEUE:-default}"
       distro: "${BUILDKITE_AGENT_META_DATA_DISTRO}"

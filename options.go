@@ -17,7 +17,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"math/rand"
 	"os"
 	"path/filepath"
@@ -244,7 +243,7 @@ func (opts *options) handleFifos() (io.Writer, error) {
 	}
 
 	if generateFifoFilename || generateMetricFifoFilename {
-		dir, err := ioutil.TempDir(os.TempDir(), "fcfifo")
+		dir, err := os.MkdirTemp("", "fcfifo")
 		if err != nil {
 			return fifo, fmt.Errorf("Fail to create temporary directory: %v", err)
 		}

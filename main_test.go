@@ -17,14 +17,14 @@ import (
 	"context"
 	"os"
 	"os/exec"
+	"runtime"
 	"syscall"
 	"testing"
-	"runtime"
 	"time"
 
 	models "github.com/firecracker-microvm/firecracker-go-sdk/client/models"
 
-	"github.com/firecracker-microvm/firecracker-go-sdk"
+	firecracker "github.com/firecracker-microvm/firecracker-go-sdk"
 	client "github.com/firecracker-microvm/firecracker-go-sdk/client"
 	ops "github.com/firecracker-microvm/firecracker-go-sdk/client/operations"
 	"github.com/go-openapi/strfmt"

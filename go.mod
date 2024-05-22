@@ -39,9 +39,9 @@ require (
 	github.com/vishvananda/netlink v1.1.1-0.20210330154013-f5de75959ad5 // indirect
 	github.com/vishvananda/netns v0.0.0-20210104183010-2eb08e3e575f // indirect
 	go.mongodb.org/mongo-driver v1.8.3 // indirect
-	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect
-	golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8 // indirect
-	golang.org/x/text v0.3.7 // indirect
+	golang.org/x/net v0.23.0 // indirect
+	golang.org/x/sys v0.18.0 // indirect
+	golang.org/x/text v0.14.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 

@@ -14,7 +14,6 @@
 package main
 
 import (
-	"io/ioutil"
 	"os"
 	"reflect"
 	"strings"
@@ -25,7 +24,7 @@ import (
 )
 
 func TestGetFirecrackerConfig(t *testing.T) {
-	tempFile, err := ioutil.TempFile("", "firectl-test-drive-path")
+	tempFile, err := os.CreateTemp("", "firectl-test-drive-path")
 	if err != nil {
 		t.Error(err)
 	}
@@ -209,7 +208,7 @@ func TestParseDevice(t *testing.T) {
 }
 
 func TestParseBlockDevices(t *testing.T) {
-	tempFile, err := ioutil.TempFile("", "firectl-test-drive-path")
+	tempFile, err := os.CreateTemp("", "firectl-test-drive-path")
 	if err != nil {
 		t.Error(err)
 	}
@@ -628,7 +627,7 @@ func TestGetFirecrackerNetworkingConfig(t *testing.T) {
 }
 
 func TestGetBlockDevices(t *testing.T) {
-	tempFile, err := ioutil.TempFile("", "firectl-test-drive-path")
+	tempFile, err := os.CreateTemp("", "firectl-test-drive-path")
 	if err != nil {
 		t.Error(err)
 	}

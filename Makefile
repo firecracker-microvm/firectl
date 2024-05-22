@@ -31,38 +31,34 @@ else
 endif
 
 build-in-docker:
-	docker run --rm -v $(CURDIR):/firectl --workdir /firectl golang:1.14 make
+	docker run --rm -v $(CURDIR):/firectl --workdir /firectl golang:1.22 make
 
 test:
 	go test -v ./...
 
-GO_MINOR_VERSION = $(shell go version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f2)
+deps = \
+	$(BINPATH)/golangci-lint \
+	$(BINPATH)/git-validation \
+	$(BINPATH)/ltag
 
-$(BINPATH)/ltag:
-	@if [ $(GO_MINOR_VERSION) -lt 16 ]; then \
-		GOBIN=$(BINPATH) GO111MODULE=on go get github.com/kunalkushwaha/ltag@v0.2.3; \
-	else \
-		GOBIN=$(BINPATH) GO111MODULE=on go install github.com/kunalkushwaha/ltag@v0.2.3; \
-	fi
-
-$(BINPATH)/git-validation:
-	@if [ $(GO_MINOR_VERSION) -lt 16 ]; then \
-		GOBIN=$(BINPATH) GO111MODULE=on go get github.com/vbatts/git-validation@v1.1.0; \
-	else \
-		GOBIN=$(BINPATH) GO111MODULE=on go install github.com/vbatts/git-validation@v1.1.0; \
-	fi
+lint: $(deps)
+	$(BINPATH)/ltag -t ./.headers -excludes "tools $(SUBMODULES)" -check -v
+	$(BINPATH)/git-validation -run DCO,short-subject -range HEAD~5..HEAD
+	$(BINPATH)/golangci-lint run
 
 $(BINPATH)/golangci-lint:
-	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(BINPATH) v1.53.3
+	GOBIN=$(BINPATH) go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.58.2
 	$(BINPATH)/golangci-lint --version
 
-lint: $(BINPATH)/ltag $(BINPATH)/git-validation $(BINPATH)/golangci-lint
-	$(BINPATH)/ltag -v -t ./.headers -check
-	$(BINPATH)/git-validation -q -run DCO,short-subject -range HEAD~5..HEAD
-	$(BINPATH)/golangci-lint run
+$(BINPATH)/git-validation:
+	GOBIN=$(BINPATH) go install github.com/vbatts/git-validation@v1.2.0
+
+$(BINPATH)/ltag:
+	GOBIN=$(BINPATH) go install github.com/kunalkushwaha/ltag@v0.2.5
 
 clean:
 	go clean
+	rm -rf $(BINPATH)
 
 install:
 	install -o root -g root -m755 -t $(INSTALLPATH) firectl

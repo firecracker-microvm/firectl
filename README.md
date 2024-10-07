@@ -136,5 +136,4 @@ users or developers of this software, please do not report it using
 GitHub issues, but instead follow
 [Firecracker's security reporting guidelines](https://github.com/firecracker-microvm/firecracker/blob/main/SECURITY.md).
 
-Other discussion: For general discussion, please join us in the
-`#general` channel on the [Firecracker Slack](https://tinyurl.com/firecracker-microvm).
+Other discussion: For general discussion, please get in touch with the [Firecracker community.](https://github.com/firecracker-microvm/firecracker?tab=readme-ov-file#faq--contact).

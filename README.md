@@ -80,9 +80,10 @@ Getting Started on AWS
 - Get firectl binary:
 
   ```
-  curl -Lo firectl https://firectl-release.s3.amazonaws.com/firectl-v0.1.0
-  curl -Lo firectl.sha256 https://firectl-release.s3.amazonaws.com/firectl-v0.1.0.sha256
+  curl -Lo firectl-v0.2.0 https://github.com/firecracker-microvm/firectl/releases/download/v0.2.0/firectl-v0.2.0
+  curl -Lo firectl.sha256 https://github.com/firecracker-microvm/firectl/releases/download/v0.2.0/firectl-v0.2.0.sha256
   sha256sum -c firectl.sha256
+  mv firectl-v0.2.0 firectl
   chmod +x firectl
   ```
 

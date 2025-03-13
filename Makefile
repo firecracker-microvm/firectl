@@ -31,7 +31,7 @@ else
 endif
 
 build-in-docker:
-	docker run --rm -v $(CURDIR):/firectl --workdir /firectl golang:1.22 make
+	docker run --rm -v $(CURDIR):/firectl --workdir /firectl golang:1.23 make
 
 test:
 	go test -v ./...
@@ -47,7 +47,7 @@ lint: $(deps)
 	$(BINPATH)/golangci-lint run
 
 $(BINPATH)/golangci-lint:
-	GOBIN=$(BINPATH) go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.58.2
+	GOBIN=$(BINPATH) go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.7
 	$(BINPATH)/golangci-lint --version
 
 $(BINPATH)/git-validation:

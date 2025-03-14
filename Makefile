@@ -33,6 +33,9 @@ endif
 build-in-docker:
 	docker run --rm -v $(CURDIR):/firectl --workdir /firectl golang:1.23 make
 
+build-in-podman:
+	podman run --rm -v $(CURDIR):/firectl --workdir /firectl golang:1.12 make
+
 test:
 	go test -v ./...
 

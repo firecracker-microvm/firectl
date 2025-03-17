@@ -52,6 +52,7 @@ type options struct {
 	FcCPUTemplate      string   `long:"cpu-template" description:"Firecracker CPU Template (C3 or T2)"`
 	FcMemSz            int64    `long:"memory" short:"m" description:"VM memory, in MiB" default:"512"`
 	FcMetadata         string   `long:"metadata" description:"Firecracker Metadata for MMDS (json)"`
+	FcMetadataFile     string   `long:"metadata-file" description:"Firecracker Metadata for MMDS (json file). json file is ignored if metadata is set."`
 	FcFifoLogFile      string   `long:"firecracker-log" short:"l" description:"pipes the fifo contents to the specified file"`
 	FcSocketPath       string   `long:"socket-path" short:"s" description:"path to use for firecracker socket, defaults to a unique file in in the first existing directory from {$HOME, $TMPDIR, or /tmp}"`
 	Debug              bool     `long:"debug" short:"d" description:"Enable debug output"`
@@ -79,6 +80,15 @@ func (opts *options) getFirecrackerConfig() (firecracker.Config, error) {
 	// validate metadata json
 	if opts.FcMetadata != "" {
 		if err := json.Unmarshal([]byte(opts.FcMetadata), &opts.validMetadata); err != nil {
+			return firecracker.Config{}, fmt.Errorf("%s: %v", errInvalidMetadata.Error(), err)
+		}
+	}
+	if opts.FcMetadataFile != "" && opts.FcMetadata == "" {
+		file, err := os.ReadFile(opts.FcMetadataFile)
+		if err != nil {
+			return firecracker.Config{}, err
+		}
+		if err := json.Unmarshal(file, &opts.validMetadata); err != nil {
 			return firecracker.Config{}, fmt.Errorf("%s: %v", errInvalidMetadata.Error(), err)
 		}
 	}

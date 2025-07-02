@@ -148,6 +148,43 @@ func TestGetFirecrackerConfig(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "Valid metadata file config",
+			opts: &options{
+				FcMetadataFile: "testdata/valid_metadata.json",
+				FcSocketPath:   "valid/path",
+			},
+			expectedErr: func(e error) (bool, error) {
+				return e == nil, nil
+			},
+			outConfig: firecracker.Config{
+				SocketPath: "valid/path",
+				Drives: []models.Drive{
+					{
+						DriveID:      firecracker.String("1"),
+						PathOnHost:   firecracker.String(""),
+						IsRootDevice: firecracker.Bool(true),
+						IsReadOnly:   firecracker.Bool(false),
+					},
+				},
+				MachineCfg: models.MachineConfiguration{
+					VcpuCount:  firecracker.Int64(0),
+					MemSizeMib: firecracker.Int64(0),
+					Smt:        firecracker.Bool(true),
+				},
+			},
+		},
+		{
+			name: "Invalid metadata file config",
+			opts: &options{
+				FcMetadataFile: "testdata/invalid_metadata.json",
+				FcSocketPath:   "valid/path",
+			},
+			expectedErr: func(e error) (bool, error) {
+				return strings.HasPrefix(e.Error(), errInvalidMetadata.Error()), errInvalidMetadata
+			},
+			outConfig: firecracker.Config{},
+		},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {

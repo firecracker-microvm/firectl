@@ -57,9 +57,10 @@ type options struct {
 	Debug              bool     `long:"debug" short:"d" description:"Enable debug output"`
 	Version            bool     `long:"version" description:"Outputs the version of the application"`
 
-	Id           string `long:"id" description:"Jailer VMM id"`
-	ExecFile     string `long:"exec-file" description:"Jailer executable"`
-	JailerBinary string `long:"jailer" description:"Jailer binary"`
+	Id            string `long:"id" description:"Jailer VMM id"`
+	ExecFile      string `long:"exec-file" description:"Jailer executable"`
+	JailerBinary  string `long:"jailer" description:"Jailer binary"`
+	CgroupVersion int    `long:"cgroup-version" description:"Cgroup version to use" default:"1"`
 
 	Uid      int `long:"uid" description:"Jailer uid for dropping privileges"`
 	Gid      int `long:"gid" description:"Jailer gid for dropping privileges"`
@@ -124,6 +125,7 @@ func (opts *options) getFirecrackerConfig() (firecracker.Config, error) {
 			Stdout:         os.Stdout,
 			Stderr:         os.Stderr,
 			Stdin:          os.Stdin,
+			CgroupVersion:  strconv.Itoa(opts.CgroupVersion),
 		}
 	} else {
 

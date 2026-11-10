@@ -1,3 +1,15 @@
+# As of November 10 2026, this project is no longer maintained.
+
+We have made the decision to deprecate firectl.
+
+The original intention for this project revolved around [firecracker-containerd](https://github.com/firecracker-microvm/firecracker-containerd), leveraging [firecracker-go-sdk](https://github.com/firecracker-microvm/firecracker-go-sdk). As both project are being sunsetted, it is no longer possible to maintain firectl as well.
+
+If you are interested in continuing to develop this project, you can fork it and continue to maintain it yourself, provided the original [LICENSE](./LICENSE) continues to be followed.
+
+There are no direct alternatives to this project.
+
+---
+
 firectl
 ===
 
